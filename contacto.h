@@ -13,15 +13,18 @@ struct _Contacto {
 typedef struct _Contacto *Contacto;
 
 //crea un contacto con los datos otorgados
-Contacto crear_contacto (char *nombre, char *apellido, int edad, char *telefono);
+Contacto contacto_crear (char *nombre, char *apellido, int edad, char *telefono);
 
 //elimina un contacto
-void eliminar_contacto (Contacto cont);
+void contacto_eliminar (Contacto cont);
 
-//compara dos contactos y retorna true si son iguales, false en caso contrario
-bool comparar_contactos (Contacto cont1, Contacto cont2);
+//compara un contacto, con un nombre y un apellido, devuelve true si son los mismos y false en caso contrario
+bool contacto_comparar (Contacto cont1, Contacto cont2);
 
 //reemplaza la edad y el telefono de un contacto
-void reemplazar_datos (Contacto cont, int edad_Nueva, char *telefono_Nuevo);
+void contacto_reemplazar_datos (Contacto cont, int edadNueva, char *telefonoNuevo);
+
+//Muestra en pantalla el contacto
+void contacto_mostrar (Contacto cont);
 
 #endif

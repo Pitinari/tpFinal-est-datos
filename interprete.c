@@ -1,4 +1,6 @@
 #include "interprete.h"
+#include "contacto.h"
+#include "tablaHash.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -28,19 +30,46 @@ char *ingresar_buffer(){
 // Recibira un buffer de entrada y decidira que accion tomar y retornara
 // un entero dependiendo de si seguir pidiendo entrada
 bool interpretar(char *buffer){
+    char *nombre, *apellido;
+    Contacto cont;
     //buscar
     if (buffer[0] == '1' && buffer[1] == '\0'){
-        printf("comando valido");
+        printf("Buscar contacto\nNombre: ");
+        nombre = ingresar_buffer();
+        //validar()
+        printf("Apellido: ");
+        apellido = ingresar_buffer();
+        //validar()
+        //cont = (Contacto) buscar
+        contacto_mostrar(cont);
+        free(nombre);
+        free(apellido);
         return true;
     }
+    char *telefono;
+    unsigned edad;
     //agregar
     if (buffer[0] == '2' && buffer[1] == '\0'){
-        printf("comando valido");
+        printf("Agregar contacto\nNombre: ");
+        nombre = ingresar_buffer();
+        //validar()
+        printf("Apellido: ");
+        apellido = ingresar_buffer();
+        //validar()
+        printf("Edad: ");
+        scanf("%u",&edad);
+        //validar()
+        printf("Telefono: ");
+        telefono = ingresar_buffer();
+        //validar()
+        cont = contacto_crear(nombre,apellido,edad,telefono);
+        // tablaHash_ingresar (cont)
         return true;
     }
     //eliminar
     if (buffer[0] == '3' && buffer[1] == '\0'){
-        printf("comando valido");
+        printf("Eliminar contacto\nNombre: ");
+        nombre
         return true;
     }
     //editar
