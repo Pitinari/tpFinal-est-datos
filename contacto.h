@@ -27,4 +27,7 @@ void contacto_reemplazar_datos (Contacto cont, int edadNueva, char *telefonoNuev
 //Muestra en pantalla el contacto
 void contacto_mostrar (Contacto cont);
 
+//Utilizada para obtener la posicion en la tabla hash
+unsigned contacto_hash (Contacto cont, unsigned cantidadColisiones)
+
 #endif

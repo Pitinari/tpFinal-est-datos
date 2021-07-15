@@ -1,12 +1,12 @@
 #ifndef __TABLAHASH_H__
 #define __TABLAHASH_H__
 
-typedef int (*FuncionComparadora)(void *dato1, void *dato2);
-/** Retorna un entero negativo si dato1 < dato2, 0 si son iguales y un entero
- * positivo si dato1 > dato2  */
+typedef bool (*FuncionComparadora)(void *dato1, void *dato2);
+/** Retorna un booleano que es true si los datos son iguales y false en caso
+contrario */
 typedef void (*FuncionDestructora)(void *dato);
 /** Libera la memoria alocada para el dato */
-typedef unsigned (*FuncionHash)(void *dato);
+typedef unsigned (*FuncionHash)(void *dato, unsigned cantColisiones);
 /** Retorna un entero sin signo para el dato */
 
 typedef struct _TablaHash *TablaHash;

@@ -1,4 +1,5 @@
 #include "contacto.h"
+#include "utilis.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -15,9 +16,7 @@ Contacto contacto_crear (char *nombre, char *apellido, unsigned edad, char *tele
 
 void contacto_eliminar (Contacto cont){
     if (cont){
-        if (cont->nombre)
             free(cont->nombre);
-        if (cont->apellido)
             free(cont->apellido);
         if (cont->telefono)
             free(cont->telefono);
@@ -27,9 +26,7 @@ void contacto_eliminar (Contacto cont){
 
 bool contacto_comparar (Contacto cont1, Contacto cont2){
     if (!strcmp(cont1->nombre, cont2->nombre) && 
-        !strcmp(cont1->apellido, cont2->apellido) &&
-        cont1->edad == cont2->edad &&
-        !strcmp(cont1->telefono, cont2->telefono))
+        !strcmp(cont1->apellido, cont2->apellido))
         return true;
     return false;
 }
@@ -44,4 +41,14 @@ void contacto_reemplazar_datos (Contacto cont, unsigned edadNueva, char *telefon
 void contacto_mostrar (Contacto cont){
     printf("Nombre y Apellido: %s %s\tEdad: %d/tTelefono: %s\n",
     cont->nombre,cont->apellido,cont->edad,cont->telefono);
+}
+
+unsigned contacto_hash (Contacto cont, unsigned cantidadColisiones){
+    char *key = malloc(sizeof(char)*(strlen(cont->nombre)+strlen(cont->apellido)+2));
+    strcat(key,nombre);
+    strcat(key,",");
+    strcat(key,apellido);
+    unsigned hash = hash_principal(key) + (cantidadColisiones * hash_secundario(key));
+    free(key);
+    return hash;
 }
