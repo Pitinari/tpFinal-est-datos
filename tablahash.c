@@ -1,6 +1,7 @@
 #include "tablahash.h"
 
 #include <stdlib.h>
+#include <math.h>
 
 /**
  * Casillas en la que almacenaremos los datos de la tabla hash.
@@ -26,7 +27,7 @@ struct _TablaHash {
  * Crea una nueva tabla hash vacia, con la capacidad dada.
  */
 TablaHash tablahash_crear(unsigned capacidad, FuncionComparadora comp,
-                         FuncionDestructora destr, FuncionHash hash, FuncionHash hashColision) {
+                         FuncionDestructora destr, FuncionHash hash) {
 
   // Pedimos memoria para la estructura principal y las casillas.
   TablaHash tabla = malloc(sizeof(struct _TablaHash));
@@ -74,7 +75,6 @@ void tablahash_destruir(TablaHash tabla) {
 
 /**
  * Inserta un dato en la tabla, o lo reemplaza si ya se encontraba.
- * IMPORTANTE: La implementacion no maneja colisiones.
  */
 void tablahash_insertar(TablaHash tabla, void *dato) {
 
@@ -95,6 +95,7 @@ void tablahash_insertar(TablaHash tabla, void *dato) {
         tabla->destr(tabla->elems[idx].dato);
         tabla->elems[idx].dato = dato;
         tabla->elems[idx].eliminado = false;
+        tabla->numElems++;
         return;
       }
       idx = tabla->hash(dato,++cantColisiones) % tabla->capacidad;
@@ -166,4 +167,36 @@ void tablahash_eliminar(TablaHash tabla, void *dato) {
     }
     return;
   }
+}
+
+/*
+ * Dado un numero entero positivo, busca el numero primo mayor, mas cercano.
+ */
+unsigned primo_mas_cercano(unsigned n){
+
+  for (unsigned i = n; true; i++) {
+    if (i % 2 == 0)
+      continue;
+    for (unsigned j = 3; j <= sqrt(i); j += 2) {
+      if (i % j == 0)
+        break;
+    }
+    if (j > sqrt(i))
+      return i;
+  }
+}
+
+/*
+ * Dado un numero entero positivo, busca el numero primo mayor, mas cercano.
+ */
+TablaHash tablahash_agrandar (TablaHash tablaVieja){
+  TablaHash tablaNueva = tablahash_crear(primo_mas_cercano(tablaVieja->capacidad * 10),
+                         tablaVieja->comp, tablaVieja->destr, tablaVieja->hash);
+
+  for (unsigned i = 0; i < tablaVieja->capacidad ; i++){
+    if ((tablaVieja->elems[i].dato != NULL) && (tablaVieja->elem[i].eliminado == false)){
+      tablahash_insertar(tablaNueva, tablaVieja->elems[i].dato);
+    }
+  }
+  return tablaNueva;
 }
