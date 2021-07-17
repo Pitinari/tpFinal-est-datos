@@ -31,7 +31,7 @@ TablaHash tablahash_crear(unsigned capacidad, FuncionComparadora comp,
 
   // Pedimos memoria para la estructura principal y las casillas.
   TablaHash tabla = malloc(sizeof(struct _TablaHash));
-  tabla->elems = malloc(sizeof(CasillaHash) * capacidad);
+  tabla->elems = malloc(sizeof(struct CasillaHash) * capacidad);
   tabla->numElems = 0;
   tabla->capacidad = capacidad;
   tabla->comp = comp;
@@ -71,6 +71,33 @@ void tablahash_destruir(TablaHash tabla) {
   free(tabla->elems);
   free(tabla);
   return;
+}
+
+/**
+ * Retorna el dato de la tabla que coincida con el dato dado, o NULL si el dato
+ * buscado no se encuentra en la tabla.
+ */
+void *tablahash_buscar(TablaHash tabla, void *dato) {
+
+  // Calculamos la posicion del dato dado, de acuerdo a la funcion hash.
+  unsigned idx, cantColisiones = 0;
+  idx = tabla->hash(dato,cantColisiones) % tabla->capacidad;
+
+  // Retornar NULL si la casilla estaba vacia.
+  if (tabla->elems[idx].dato == NULL)
+    return NULL;
+  // Retornar el dato de la casilla si hay concidencia.
+  else if (tabla->comp(tabla->elems[idx].dato, dato) && !(tabla->elems[idx].eliminado))
+    return tabla->elems[idx].dato;
+  // Retornar NULL en otro caso.
+  else{
+    while (tabla->elems[idx].dato){
+      if (tabla->comp(tabla->elems[idx].dato, dato) && !(tabla->elems[idx].eliminado))
+        return tabla->elems[idx].dato;
+      idx = tabla->hash(dato,++cantColisiones) % tabla->capacidad;
+    }
+    return NULL;
+  }
 }
 
 /**
@@ -115,33 +142,6 @@ void tablahash_insertar(TablaHash tabla, void *dato) {
 }
 
 /**
- * Retorna el dato de la tabla que coincida con el dato dado, o NULL si el dato
- * buscado no se encuentra en la tabla.
- */
-void *tablahash_buscar(TablaHash tabla, void *dato) {
-
-  // Calculamos la posicion del dato dado, de acuerdo a la funcion hash.
-  unsigned idx, cantColisiones = 0;
-  idx = tabla->hash(dato,cantColisiones) % tabla->capacidad;
-
-  // Retornar NULL si la casilla estaba vacia.
-  if (tabla->elems[idx].dato == NULL)
-    return NULL;
-  // Retornar el dato de la casilla si hay concidencia.
-  else if (tabla->comp(tabla->elems[idx].dato, dato) && !(tabla->elems[idx].eliminado))
-    return tabla->elems[idx].dato;
-  // Retornar NULL en otro caso.
-  else{
-    while (tabla->elems[idx].dato){
-      if (tabla->comp(tabla->elems[idx].dato, dato) && !(tabla->elems[idx].eliminado))
-        return tabla->elems[idx].dato;
-      idx = tabla->hash(dato,++cantColisiones) % tabla->capacidad;
-    }
-    return NULL;
-  }
-}
-
-/**
  * Elimina el dato de la tabla que coincida con el dato dado.
  */
 void tablahash_eliminar(TablaHash tabla, void *dato) {
@@ -154,19 +154,19 @@ void tablahash_eliminar(TablaHash tabla, void *dato) {
   if (tabla->elems[idx].dato == NULL)
     return;
   // Retornar el dato de la casilla si hay concidencia.
-  else if (tabla->comp(tabla->elems[idx].dato, dato))
+  else if (tabla->comp(tabla->elems[idx].dato, dato)){
     tabla->elems[idx].eliminado = true;
     return;
-  // Retornar NULL en otro caso.
-  else{
-    while (tabla->elems[idx].dato){
-      if (tabla->comp(tabla->elems[idx].dato, dato))
-        tabla->elems[idx].eliminado = true;
-        return;
-      idx = tabla->hash(dato,++cantColisiones) % tabla->capacidad;
-    }
-    return;
   }
+  // Retornar NULL en otro caso.
+  while (tabla->elems[idx].dato){
+    if (tabla->comp(tabla->elems[idx].dato, dato)){
+      tabla->elems[idx].eliminado = true;
+      return;
+    }
+    idx = tabla->hash(dato,++cantColisiones) % tabla->capacidad;
+  }
+  return;
 }
 
 /*
@@ -174,10 +174,12 @@ void tablahash_eliminar(TablaHash tabla, void *dato) {
  */
 unsigned primo_mas_cercano(unsigned n){
 
-  for (unsigned i = n; true; i++) {
+unsigned i,j;
+
+  for (i = n; true; i++) {
     if (i % 2 == 0)
       continue;
-    for (unsigned j = 3; j <= sqrt(i); j += 2) {
+    for (j = 3; j <= sqrt(i); j += 2) {
       if (i % j == 0)
         break;
     }
@@ -194,9 +196,10 @@ TablaHash tablahash_agrandar (TablaHash tablaVieja){
                          tablaVieja->comp, tablaVieja->destr, tablaVieja->hash);
 
   for (unsigned i = 0; i < tablaVieja->capacidad ; i++){
-    if ((tablaVieja->elems[i].dato != NULL) && (tablaVieja->elem[i].eliminado == false)){
+    if ((tablaVieja->elems[i].dato != NULL) && (tablaVieja->elems[i].eliminado == false)){
       tablahash_insertar(tablaNueva, tablaVieja->elems[i].dato);
     }
   }
+  tablahash_destruir(tablaVieja);
   return tablaNueva;
 }

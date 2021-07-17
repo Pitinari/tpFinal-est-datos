@@ -1,6 +1,6 @@
 #include "interprete.h"
 #include "contacto.h"
-#include "tablaHash.h"
+#include "tablahash.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -26,10 +26,10 @@ char *ingresar_buffer(){
   return string;
 }
 
-//interpreta: *Char -> Int
+//interpreta: *Char TablaHash -> Int
 // Recibira un buffer de entrada y decidira que accion tomar y retornara
 // un entero dependiendo de si seguir pidiendo entrada
-bool interpretar(char *buffer){
+bool interpretar(char *buffer, TablaHash tabla){
     char *nombre, *apellido;
     Contacto cont;
     //buscar
@@ -40,10 +40,10 @@ bool interpretar(char *buffer){
         printf("Apellido: ");
         apellido = ingresar_buffer();
         //validar()
-        //cont = (Contacto) buscar
+        Contacto aux = contacto_crear(nombre,apellido,0,NULL);
+        cont = (Contacto) tablahash_buscar(tabla, aux);
+        contacto_eliminar(aux);
         contacto_mostrar(cont);
-        free(nombre);
-        free(apellido);
         return true;
     }
     char *telefono;
@@ -58,18 +58,24 @@ bool interpretar(char *buffer){
         //validar()
         printf("Edad: ");
         scanf("%u",&edad);
+        getchar();
         //validar()
         printf("Telefono: ");
         telefono = ingresar_buffer();
         //validar()
         cont = contacto_crear(nombre,apellido,edad,telefono);
-        // tablaHash_ingresar (cont)
+
+        //Si la tabla se esta quedando con poco espacio, se agranda
+        if (((float)tablahash_nelems(tabla) / (float)tablahash_capacidad(tabla)) > 0.7)
+            tabla = tablahash_agrandar(tabla);
+        
+        tablahash_insertar(tabla, cont);
         return true;
     }
     //eliminar
     if (buffer[0] == '3' && buffer[1] == '\0'){
         printf("Eliminar contacto\nNombre: ");
-        nombre
+        
         return true;
     }
     //editar

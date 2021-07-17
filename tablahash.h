@@ -1,6 +1,8 @@
 #ifndef __TABLAHASH_H__
 #define __TABLAHASH_H__
 
+#include <stdbool.h>
+
 typedef bool (*FuncionComparadora)(void *dato1, void *dato2);
 /** Retorna un booleano que es true si los datos son iguales y false en caso
 contrario */
