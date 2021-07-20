@@ -26,61 +26,146 @@ char *ingresar_buffer(){
   return string;
 }
 
-//interpreta: *Char TablaHash -> Int
-// Recibira un buffer de entrada y decidira que accion tomar y retornara
-// un entero dependiendo de si seguir pidiendo entrada
-bool interpretar(char *buffer, TablaHash tabla){
+void interprete_buscar (TablaHash *tabla){
     char *nombre, *apellido;
     Contacto cont;
-    //buscar
-    if (buffer[0] == '1' && buffer[1] == '\0'){
-        printf("Buscar contacto\nNombre: ");
-        nombre = ingresar_buffer();
-        //validar()
-        printf("Apellido: ");
-        apellido = ingresar_buffer();
-        //validar()
-        Contacto aux = contacto_crear(nombre,apellido,0,NULL);
-        cont = (Contacto) tablahash_buscar(tabla, aux);
-        contacto_eliminar(aux);
-        contacto_mostrar(cont);
-        return true;
+    printf("Buscar contacto\nNombre: ");
+    nombre = ingresar_buffer();
+    if (contacto_validar_nombre(nombre) == false){
+        printf("Nombre no valido\n");
+        free(nombre);
+        return;
     }
-    char *telefono;
+
+    printf("Apellido: ");
+    apellido = ingresar_buffer();
+    if (contacto_validar_nombre(apellido) == false){
+        printf("Apellido no valido\n");
+        free(nombre);
+        free(apellido);
+        return;
+    }
+    Contacto aux = contacto_crear(nombre,apellido,0,NULL);
+    cont = (Contacto) tablahash_buscar(*tabla, aux);
+    contacto_eliminar(aux);
+    contacto_mostrar(cont);
+    return;
+}
+
+void interprete_agregar (TablaHash *tabla){
+    Contacto cont;
+    char *nombre, *apellido, *telefono;
     unsigned edad;
-    //agregar
-    if (buffer[0] == '2' && buffer[1] == '\0'){
-        printf("Agregar contacto\nNombre: ");
-        nombre = ingresar_buffer();
-        //validar()
-        printf("Apellido: ");
-        apellido = ingresar_buffer();
-        //validar()
-        printf("Edad: ");
+    printf("Agregar contacto\nNombre: ");
+    nombre = ingresar_buffer();
+    if (contacto_validar_nombre(nombre) == false){
+        printf("Nombre no valido\n");
+        free(nombre);
+        return;
+    }
+    printf("Apellido: ");
+    apellido = ingresar_buffer();
+    if (contacto_validar_nombre(apellido) == false){
+        printf("Apellido no valido\n");
+        free(nombre);
+        free(apellido);
+        return;
+    }
+    printf("Edad: ");
+    scanf("%u",&edad);
+    getchar();
+    printf("Telefono: ");
+    telefono = ingresar_buffer();
+    if (contacto_validar_telefono(telefono) == false){
+        printf("Telefono no valido\n");
+        free(nombre);
+        free(apellido);
+        free(telefono);
+        return;
+    }
+    cont = contacto_crear(nombre,apellido,edad,telefono);
+    //Si la tabla se esta quedando con poco espacio, se agranda
+    if (((float)tablahash_nelems(*tabla) / (float)tablahash_capacidad(*tabla)) > 0.7)
+        *tabla = tablahash_agrandar(*tabla);
+
+    tablahash_insertar(*tabla, cont);
+    return;
+}
+
+void interprete_eliminar (TablaHash *tabla){
+    char *nombre, *apellido;
+    Contacto cont;
+    printf("Eliminar contacto\nNombre: ");
+    nombre = ingresar_buffer();
+    if (contacto_validar_nombre(nombre) == false){
+        printf("Nombre no valido\n");
+        free(nombre);
+        return;
+    }
+    printf("Apellido: ");
+    apellido = ingresar_buffer();
+    if (contacto_validar_nombre(apellido) == false){
+        printf("Apellido no valido\n");
+        free(nombre);
+        free(apellido);
+        return;
+    }
+    cont = contacto_crear(nombre,apellido,0,NULL);
+    tablahash_eliminar(tabla, cont);
+    contacto_eliminar(cont);
+    return;
+}
+
+void interprete_editar (TablaHash *tabla){
+    Contacto cont;
+    char *nombre, *apellido, *telefono;
+    unsigned edad;
+    printf("Editar contacto\nNombre: ");
+    nombre = ingresar_buffer();
+    //validar()
+    printf("Apellido: ");
+    apellido = ingresar_buffer();
+    //validar()
+    Contacto aux = contacto_crear(nombre,apellido,0,NULL);
+    cont = (Contacto) tablahash_buscar(*tabla, aux);
+    contacto_eliminar(aux);
+    if (cont != NULL){
+        printf("Edad a reemplazar: ");
         scanf("%u",&edad);
         getchar();
         //validar()
-        printf("Telefono: ");
+        printf("Telefono a reemplazar: ");
         telefono = ingresar_buffer();
         //validar()
-        cont = contacto_crear(nombre,apellido,edad,telefono);
+        contacto_reemplazar_datos (cont, edad, telefono);
+    }
+    else
+        printf("El contacto no existe\n");
+    return;
+}
 
-        //Si la tabla se esta quedando con poco espacio, se agranda
-        if (((float)tablahash_nelems(tabla) / (float)tablahash_capacidad(tabla)) > 0.7)
-            tabla = tablahash_agrandar(tabla);
-        
-        tablahash_insertar(tabla, cont);
+//interpreta: *Char TablaHash -> Int
+// Recibira un buffer de entrada y decidira que accion tomar y retornara
+// un entero dependiendo de si seguir pidiendo entrada
+bool interpretar(char *buffer, TablaHash *tabla){
+    //buscar
+    if (buffer[0] == '1' && buffer[1] == '\0'){
+        interprete_buscar(tabla);
+        return true;
+    }
+    //agregar
+    if (buffer[0] == '2' && buffer[1] == '\0'){
+        interprete_agregar(tabla);
         return true;
     }
     //eliminar
     if (buffer[0] == '3' && buffer[1] == '\0'){
-        printf("Eliminar contacto\nNombre: ");
-        
+        interprete_eliminar(tabla);
         return true;
     }
     //editar
     if (buffer[0] == '4' && buffer[1] == '\0'){
-        printf("comando valido");
+        interprete_editar(tabla);
         return true;
     }
     //cargar

@@ -53,11 +53,6 @@ void tablahash_eliminar(TablaHash tabla, void *dato);
 /*
  * Dado un numero entero positivo, busca el numero primo mayor, mas cercano.
  */
-unsigned primo_mas_cercano(unsigned n);
-
-/*
- * Dado un numero entero positivo, busca el numero primo mayor, mas cercano.
- */
 TablaHash tablahash_agrandar (TablaHash tablaVieja);
 
 #endif /* __TABLAHASH_H__ */

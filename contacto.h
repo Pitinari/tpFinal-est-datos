@@ -30,4 +30,10 @@ void contacto_mostrar (Contacto cont);
 //Utilizada para obtener la posicion en la tabla hash
 unsigned contacto_hash (void *cont, unsigned cantidadColisiones);
 
+//Retorna true si el nombre es valido y false en caso contrario
+bool contaco_validar_nombre (char *nombre);
+
+//Retorna true si el telefono es valido y false en caso contrario
+bool contacto_validar_telefono (char *telefono);
+
 #endif

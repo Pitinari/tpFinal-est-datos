@@ -192,13 +192,12 @@ unsigned i,j;
  * Dado un numero entero positivo, busca el numero primo mayor, mas cercano.
  */
 TablaHash tablahash_agrandar (TablaHash tablaVieja){
-  TablaHash tablaNueva = tablahash_crear(primo_mas_cercano(tablaVieja->capacidad * 10),
+  TablaHash tablaNueva = tablahash_crear(primo_mas_cercano(tablahash_capacidad(tablaVieja) * 10),
                          tablaVieja->comp, tablaVieja->destr, tablaVieja->hash);
 
-  for (unsigned i = 0; i < tablaVieja->capacidad ; i++){
-    if ((tablaVieja->elems[i].dato != NULL) && (tablaVieja->elems[i].eliminado == false)){
+  for (unsigned i = 0; i < tablahash_capacidad(tablaVieja) ; i++){
+    if ((tablaVieja->elems[i].dato != NULL) && (tablaVieja->elems[i].eliminado == false))
       tablahash_insertar(tablaNueva, tablaVieja->elems[i].dato);
-    }
   }
   tablahash_destruir(tablaVieja);
   return tablaNueva;

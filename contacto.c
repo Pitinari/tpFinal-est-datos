@@ -54,3 +54,19 @@ unsigned contacto_hash (void *cont, unsigned cantidadColisiones){
     free(key);
     return hash;
 }
+
+bool contaco_validar_nombre (char *nombre){
+    for (unsigned i = 0; nombre[i] != '\0'; i++){
+        if (nombre[i] < 32 || nombre[i] > 126 || nombre[i] == ',')
+            return false;
+    }
+    return true
+}
+
+bool contacto_validar_telefono (char *telefono){
+    for (unsigned i = 0; telefono[i] != '\0'; i++){
+        if (!(isdigit(telefono[i]) || telefono[i] == '-' || telefono[i] == '+') || telefono[i] == ',')
+            return false;
+    }
+    return true;
+}
