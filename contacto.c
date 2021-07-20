@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 
 Contacto contacto_crear (char *nombre, char *apellido, unsigned edad, char *telefono){
     Contacto cont = malloc(sizeof(struct _Contacto));
@@ -40,8 +41,11 @@ void contacto_reemplazar_datos (Contacto cont, unsigned edadNueva, char *telefon
 }
 
 void contacto_mostrar (Contacto cont){
-    printf("Nombre y Apellido: %s %s\tEdad: %d\tTelefono: %s\n",
-    cont->nombre,cont->apellido,cont->edad,cont->telefono);
+    if (cont == NULL)
+        printf("El contacto no existe");
+    else
+        printf("Nombre y Apellido: %s %s\tEdad: %d\tTelefono: %s\n",
+        cont->nombre,cont->apellido,cont->edad,cont->telefono);
 }
 
 unsigned contacto_hash (void *cont, unsigned cantidadColisiones){
@@ -55,12 +59,12 @@ unsigned contacto_hash (void *cont, unsigned cantidadColisiones){
     return hash;
 }
 
-bool contaco_validar_nombre (char *nombre){
+bool contacto_validar_nombre (char *nombre){
     for (unsigned i = 0; nombre[i] != '\0'; i++){
         if (nombre[i] < 32 || nombre[i] > 126 || nombre[i] == ',')
             return false;
     }
-    return true
+    return true;
 }
 
 bool contacto_validar_telefono (char *telefono){

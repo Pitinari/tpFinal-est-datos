@@ -111,7 +111,7 @@ void interprete_eliminar (TablaHash *tabla){
         return;
     }
     cont = contacto_crear(nombre,apellido,0,NULL);
-    tablahash_eliminar(tabla, cont);
+    tablahash_eliminar(*tabla, cont);
     contacto_eliminar(cont);
     return;
 }

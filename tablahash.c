@@ -50,12 +50,12 @@ TablaHash tablahash_crear(unsigned capacidad, FuncionComparadora comp,
 /**
  * Retorna el numero de elementos de la tabla.
  */
-int tablahash_nelems(TablaHash tabla) { return tabla->numElems; }
+unsigned tablahash_nelems(TablaHash tabla) { return tabla->numElems; }
 
 /**
  * Retorna la capacidad de la tabla.
  */
-int tablahash_capacidad(TablaHash tabla) { return tabla->capacidad; }
+unsigned tablahash_capacidad(TablaHash tabla) { return tabla->capacidad; }
 
 /**
  * Destruye la tabla.

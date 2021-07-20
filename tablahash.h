@@ -22,12 +22,12 @@ TablaHash tablahash_crear(unsigned capacidad, FuncionComparadora comp,
 /**
  * Retorna el numero de elementos de la tabla.
  */
-int tablahash_nelems(TablaHash tabla);
+unsigned tablahash_nelems(TablaHash tabla);
 
 /**
  * Retorna la capacidad de la tabla.
  */
-int tablahash_capacidad(TablaHash tabla);
+unsigned tablahash_capacidad(TablaHash tabla);
 
 /**
  * Destruye la tabla.
