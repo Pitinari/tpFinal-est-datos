@@ -4,26 +4,6 @@
 #include <math.h>
 
 /**
- * Casillas en la que almacenaremos los datos de la tabla hash.
- */
-struct CasillaHash{
-  void *dato;
-  bool eliminado;
-};
-
-/**
- * Estructura principal que representa la tabla hash.
- */
-struct _TablaHash {
-  struct CasillaHash *elems;
-  unsigned numElems;
-  unsigned capacidad;
-  FuncionComparadora comp;
-  FuncionDestructora destr;
-  FuncionHash hash;
-};
-
-/**
  * Crea una nueva tabla hash vacia, con la capacidad dada.
  */
 TablaHash tablahash_crear(unsigned capacidad, FuncionComparadora comp,

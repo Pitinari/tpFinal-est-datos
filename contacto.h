@@ -6,7 +6,7 @@
 struct _Contacto {
     char *nombre;
     char *apellido;
-    int edad;
+    unsigned edad;
     char *telefono;
 };
 

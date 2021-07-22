@@ -7,8 +7,8 @@
 
 unsigned int string_a_unsigned(char *st);
 
-void cargar(TablaHash *tabla);
+void cargar(TablaHash *tabla, char *buffer);
 
-void guardar(TablaHash *tabla);
+void guardar(TablaHash *tabla, char *buffer);
 
 #endif

@@ -1,13 +1,16 @@
 FLAGS = -Wall -Wextra -Werror -std=c99 -g
 
 #declaracion de destinos
-main: main.o interprete.o contacto.o utils.o tablahash.o
-	gcc $(FLAGS) -o $@.out $@.o interprete.o contacto.o utils.o tablahash.o -lm
+main: main.o interprete.o contacto.o utils.o tablahash.o archivos.o
+	gcc $(FLAGS) -o $@.out $@.o interprete.o contacto.o utils.o archivos.o tablahash.o -lm
 
-main.o:	main.c  interprete.h contacto.h tablahash.h
+main.o:	main.c  interprete.h contacto.h tipos_de_datos/tablahash.h
 	gcc $(FLAGS) -c	main.c
 
-interprete.o: interprete.c interprete.h contacto.h tablahash.h
+archivos.o: archivos.c archivos.h tipos_de_datos/tablahash.h
+	gcc $(FLAGS) -c archivos.c
+
+interprete.o: interprete.c interprete.h contacto.h tipos_de_datos/tablahash.h
 	gcc $(FLAGS) -c interprete.c
 
 contacto.o: contacto.c contacto.h utils.h

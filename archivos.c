@@ -1,11 +1,11 @@
-#include "archivo.h"
+#include "archivos.h"
 #include "tipos_de_datos/tablahash.h"
-#include "interprete.h"
 #include "contacto.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 unsigned int string_a_unsigned(char *st) {
   char *x;
@@ -16,16 +16,14 @@ unsigned int string_a_unsigned(char *st) {
   return (strtoul(st, 0L, 10));
 }
 
-void cargar(TablaHash *tabla){
-	printf("Ingrese nombre del archivo a cargar: ");
-	char *palabra, *control, *buffer = ingresar_buffer();
-	FILE *archivo = fopen(buffer, "r");
+void cargar(TablaHash *tabla, char *nombreArchivo){
+	char *palabra, *control, *buffer;
+	FILE *archivo = fopen(nombreArchivo, "r");
 	if (archivo == NULL){
 		printf("El archivo no se pudo abrir");
 		exit(EXIT_FAILURE);
 	}
-	free(buffer);
-	char **parametros = malloc(sizeof(*char)*4);
+	char *parametros[4];
 	unsigned i;
 	while (getline(&buffer,NULL,archivo) == -1){
 		buffer[strlen(buffer)-1] = '\0';
@@ -45,11 +43,9 @@ void cargar(TablaHash *tabla){
 	fclose(archivo);
 }
 
-void guardar(TablaHash *tabla){
+void guardar(TablaHash *tabla, char *nombreArchivo){
 	printf("Ingrese nombre del archivo a guardar: ");
-	char *buffer = ingresar_buffer();
-	FILE *archivo = fopen(buffer, "w");
-	free(buffer);
+	FILE *archivo = fopen(nombreArchivo, "w");
 	if (archivo == NULL){
 		printf("El archivo no se pudo abrir");
 		exit(EXIT_FAILURE);

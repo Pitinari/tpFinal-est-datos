@@ -1,11 +1,12 @@
 #include "interprete.h"
 #include "contacto.h"
-#include "archivo.h"
+#include "archivos.h"
 #include "tipos_de_datos/tablahash.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 // ingresar_buffer : Nada -> *char
 // guarda en memoria un string de largo dinamico, almacenando de a 10
@@ -144,23 +145,22 @@ void filtrar_and(TablaHash *tabla){
         }
         return;
     }
-    else{
-        Contacto cont;
-        bool flag = false;
-        for(i=0 ; i < tablahash_capacidad(*tabla) ; i++){
-            if ((*tabla)->elems[i].dato == NULL || (*tabla)->elems[i].eliminado == true)
-                continue;
-            cont = (Contacto)(*tabla)->elems[i].dato;
-            if ( !strcmp(cont->nombre,param[0]) &&
-                 !strcmp(cont->apellido,param[1]) &&
-                 !strcmp(cont->telefono,param[3]) &&
-                 (cont->edad == string_a_unsigned(param[2]) ){
-                contacto_mostrar(cont);
-                flag = true;
-            }
+    
+    Contacto cont;
+    bool noVacio = false;
+    for(i=0 ; i < tablahash_capacidad(*tabla) ; i++){
+        if ((*tabla)->elems[i].dato == NULL || (*tabla)->elems[i].eliminado == true)
+            continue;
+        cont = (Contacto)(*tabla)->elems[i].dato;
+        if ( !strcmp(cont->nombre,param[0]) &&
+             !strcmp(cont->apellido,param[1]) &&
+             !strcmp(cont->telefono,param[3]) &&
+             (cont->edad == string_a_unsigned(param[2])) ){
+            contacto_mostrar(cont);
+            noVacio = true;
         }
     }
-    if (!flag)
+    if (noVacio == false)
         printf("Ningun contacto coincide\n");
 
     for (i=0 ; i<4 ; i++){
@@ -187,7 +187,7 @@ void filtrar_or(TablaHash *tabla){
         return;
     }
     Contacto cont;
-    bool flag = false;
+    bool noVacio = false;
     for (i=0 ; i < tablahash_capacidad(*tabla) ; i++) {
         if ((*tabla)->elems[i].dato == NULL || (*tabla)->elems[i].eliminado == true)
             continue;
@@ -195,12 +195,12 @@ void filtrar_or(TablaHash *tabla){
         if ( !strcmp(cont->nombre,param[0]) ||
              !strcmp(cont->apellido,param[1]) ||
              !strcmp(cont->telefono,param[3]) ||
-             (cont->edad == string_a_unsigned(param[2]) ){
+             (cont->edad == string_a_unsigned(param[2])) ){
             contacto_mostrar(cont);
-            flag = true;
+            noVacio = true;
         }
     }
-    if (!flag)
+    if (noVacio == false)
         printf("Ningun contacto coincide\n");
     
     for (i=0 ; i<4 ; i++){
@@ -234,12 +234,18 @@ bool interpretar(char *buffer, TablaHash *tabla){
     }
     //cargar
     if (buffer[0] == '5' && buffer[1] == '\0'){
-        cargar(tabla);
+        printf("Ingrese nombre del archivo a cargar: ");
+        char *nombreArchivo = ingresar_buffer();
+        cargar(tabla, nombreArchivo);
+        free(nombreArchivo);        
         return true;
     }
     //guardar
     if (buffer[0] == '6' && buffer[1] == '\0'){
-        guardar(tabla);
+        printf("Ingrese nombre del archivo a guardar: ");
+        char *nombreArchivo = ingresar_buffer();
+        guardar(tabla,nombreArchivo);
+        free(nombreArchivo);
         return true;
     }
     //deshacer

@@ -11,6 +11,26 @@ typedef void (*FuncionDestructora)(void *dato);
 typedef unsigned (*FuncionHash)(void *dato, unsigned cantColisiones);
 /** Retorna un entero sin signo para el dato */
 
+/**
+ * Casillas en la que almacenaremos los datos de la tabla hash.
+ */
+struct CasillaHash{
+  void *dato;
+  bool eliminado;
+};
+
+/**
+ * Estructura principal que representa la tabla hash.
+ */
+struct _TablaHash {
+  struct CasillaHash *elems;
+  unsigned numElems;
+  unsigned capacidad;
+  FuncionComparadora comp;
+  FuncionDestructora destr;
+  FuncionHash hash;
+};
+
 typedef struct _TablaHash *TablaHash;
 
 /**
