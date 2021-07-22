@@ -1,7 +1,7 @@
 #ifndef INTERPRETE_H
 #define INTERPRETE_H
 
-#include "tablahash.h"
+#include "tipos_de_datos/tablahash.h"
 
 #include <stdbool.h>
 

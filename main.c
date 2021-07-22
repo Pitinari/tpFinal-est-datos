@@ -1,6 +1,6 @@
 #include "interprete.h"
 #include "constantes.h"
-#include "tablahash.h"
+#include "tipos_de_datos/tablahash.h"
 #include "contacto.h"
 
 #include <stdlib.h>

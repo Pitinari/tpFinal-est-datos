@@ -1,9 +1,11 @@
 #include "interprete.h"
 #include "contacto.h"
-#include "tablahash.h"
+#include "archivo.h"
+#include "tipos_de_datos/tablahash.h"
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 // ingresar_buffer : Nada -> *char
 // guarda en memoria un string de largo dinamico, almacenando de a 10
@@ -31,20 +33,10 @@ void interprete_buscar (TablaHash *tabla){
     Contacto cont;
     printf("Buscar contacto\nNombre: ");
     nombre = ingresar_buffer();
-    if (contacto_validar_nombre(nombre) == false){
-        printf("Nombre no valido\n");
-        free(nombre);
-        return;
-    }
 
     printf("Apellido: ");
     apellido = ingresar_buffer();
-    if (contacto_validar_nombre(apellido) == false){
-        printf("Apellido no valido\n");
-        free(nombre);
-        free(apellido);
-        return;
-    }
+
     Contacto aux = contacto_crear(nombre,apellido,0,NULL);
     cont = (Contacto) tablahash_buscar(*tabla, aux);
     contacto_eliminar(aux);
@@ -97,19 +89,8 @@ void interprete_eliminar (TablaHash *tabla){
     Contacto cont;
     printf("Eliminar contacto\nNombre: ");
     nombre = ingresar_buffer();
-    if (contacto_validar_nombre(nombre) == false){
-        printf("Nombre no valido\n");
-        free(nombre);
-        return;
-    }
     printf("Apellido: ");
     apellido = ingresar_buffer();
-    if (contacto_validar_nombre(apellido) == false){
-        printf("Apellido no valido\n");
-        free(nombre);
-        free(apellido);
-        return;
-    }
     cont = contacto_crear(nombre,apellido,0,NULL);
     tablahash_eliminar(*tabla, cont);
     contacto_eliminar(cont);
@@ -122,10 +103,8 @@ void interprete_editar (TablaHash *tabla){
     unsigned edad;
     printf("Editar contacto\nNombre: ");
     nombre = ingresar_buffer();
-    //validar()
     printf("Apellido: ");
     apellido = ingresar_buffer();
-    //validar()
     Contacto aux = contacto_crear(nombre,apellido,0,NULL);
     cont = (Contacto) tablahash_buscar(*tabla, aux);
     contacto_eliminar(aux);
@@ -133,15 +112,100 @@ void interprete_editar (TablaHash *tabla){
         printf("Edad a reemplazar: ");
         scanf("%u",&edad);
         getchar();
-        //validar()
         printf("Telefono a reemplazar: ");
         telefono = ingresar_buffer();
-        //validar()
+        if (contacto_validar_telefono(telefono) == false){
+            printf("Telefono no valido\n");
+            free(telefono);
+        return;
+    }
         contacto_reemplazar_datos (cont, edad, telefono);
     }
     else
         printf("El contacto no existe\n");
     return;
+}
+
+void filtrar_and(TablaHash *tabla){
+    char *param[4];
+    printf("Ingresar nombre: ");
+    param[0] = ingresar_buffer();
+    printf("Ingresar apellido: ");
+    param[1] = ingresar_buffer();
+    printf("Ingresar edad: ");
+    param[2] = ingresar_buffer();
+    printf("Ingresar telefono: ");
+    param[3] = ingresar_buffer();
+    unsigned i;
+    if (*param[0] == '\0' && *param[1] == '\0' && *param[2] == '\0' && *param[3] == '\0'){
+        printf("Ningun parametro es no nulo\n");
+        for (i=0 ; i<4 ; i++){
+            free(param[i]);
+        }
+        return;
+    }
+    else{
+        Contacto cont;
+        bool flag = false;
+        for(i=0 ; i < tablahash_capacidad(*tabla) ; i++){
+            if ((*tabla)->elems[i].dato == NULL || (*tabla)->elems[i].eliminado == true)
+                continue;
+            cont = (Contacto)(*tabla)->elems[i].dato;
+            if ( !strcmp(cont->nombre,param[0]) &&
+                 !strcmp(cont->apellido,param[1]) &&
+                 !strcmp(cont->telefono,param[3]) &&
+                 (cont->edad == string_a_unsigned(param[2]) ){
+                contacto_mostrar(cont);
+                flag = true;
+            }
+        }
+    }
+    if (!flag)
+        printf("Ningun contacto coincide\n");
+
+    for (i=0 ; i<4 ; i++){
+        free(param[i]);
+    }
+}
+
+void filtrar_or(TablaHash *tabla){
+    char *param[4];
+    printf("Ingresar nombre: ");
+    param[0] = ingresar_buffer();
+    printf("Ingresar apellido: ");
+    param[1] = ingresar_buffer();
+    printf("Ingresar edad: ");
+    param[2] = ingresar_buffer();
+    printf("Ingresar telefono: ");
+    param[3] = ingresar_buffer();
+    unsigned i;
+    if (*param[0] == '\0' && *param[1] == '\0' && *param[2] == '\0' && *param[3] == '\0'){
+        printf("Ningun parametro es no nulo\n");
+        for (i=0 ; i<4 ; i++){
+            free(param[i]);
+        }
+        return;
+    }
+    Contacto cont;
+    bool flag = false;
+    for (i=0 ; i < tablahash_capacidad(*tabla) ; i++) {
+        if ((*tabla)->elems[i].dato == NULL || (*tabla)->elems[i].eliminado == true)
+            continue;
+        cont = (Contacto)(*tabla)->elems[i].dato;
+        if ( !strcmp(cont->nombre,param[0]) ||
+             !strcmp(cont->apellido,param[1]) ||
+             !strcmp(cont->telefono,param[3]) ||
+             (cont->edad == string_a_unsigned(param[2]) ){
+            contacto_mostrar(cont);
+            flag = true;
+        }
+    }
+    if (!flag)
+        printf("Ningun contacto coincide\n");
+    
+    for (i=0 ; i<4 ; i++){
+        free(param[i]);
+    }
 }
 
 //interpreta: *Char TablaHash -> Int
@@ -170,12 +234,12 @@ bool interpretar(char *buffer, TablaHash *tabla){
     }
     //cargar
     if (buffer[0] == '5' && buffer[1] == '\0'){
-        printf("comando valido");
+        cargar(tabla);
         return true;
     }
     //guardar
     if (buffer[0] == '6' && buffer[1] == '\0'){
-        printf("comando valido");
+        guardar(tabla);
         return true;
     }
     //deshacer
@@ -190,12 +254,12 @@ bool interpretar(char *buffer, TablaHash *tabla){
     }
     //and
     if (buffer[0] == '9' && buffer[1] == '\0'){
-        printf("comando valido");
+        filtrar_and(tabla);
         return true;
     }
     //or
     if (buffer[0] == '1' && buffer[1] == '0' && buffer[2] == '\0'){
-        printf("comando valido");
+        filtrar_or(tabla);
         return true;
     }
     //guardar ordenado

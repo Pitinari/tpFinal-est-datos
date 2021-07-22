@@ -16,9 +16,9 @@ contacto.o: contacto.c contacto.h utils.h
 utilis.o: utils.c utils.h
 	gcc $(FLAGS) -c utils.c
 
-tablahash.o: tablahash.c tablahash.h
-	gcc $(FLAGS) -c tablahash.c -lm
+tablahash.o: tipos_de_datos/tablahash.c tipos_de_datos/tablahash.h
+	gcc $(FLAGS) -c tipos_de_datos/tablahash.c -lm
 
 clean:
-	rm	*.o
-	rm  *.out
+	rm *.o
+	rm *.out
