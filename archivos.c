@@ -16,6 +16,24 @@ unsigned int string_a_unsigned(char *st) {
   return (strtoul(st, 0L, 10));
 }
 
+// strsep : **char -> *char -> *char
+// Toma la direccion de memoria de un puntero de char y si aparece
+// dentro del string, dado por el puntero al que apunta la direccion de 
+// memoria del primer parametro, el string del segundo parametro, la funcion
+// devuelve el primer string hasta la aparicion del segundo string, y mueve la
+// memoria del primer parametro hasta despues de la primera aparicion del
+// segundo parametro
+char *strsep(char **stringp, const char *delim) {
+    char *rv = *stringp;
+    if (rv) {
+        *stringp += strcspn(*stringp, delim);
+        if (**stringp)
+            *(*stringp)++ = '\0';
+        else
+            *stringp = 0; }
+    return rv;
+}
+
 void cargar(TablaHash *tabla, char *nombreArchivo){
 	char *palabra, *control, *buffer;
 	FILE *archivo = fopen(nombreArchivo, "r");
@@ -25,11 +43,11 @@ void cargar(TablaHash *tabla, char *nombreArchivo){
 	}
 	char *parametros[4];
 	unsigned i;
-	while (getline(&buffer,NULL,archivo) == -1){
+	while ((getline(&buffer,NULL,archivo) == -1)){
 		buffer[strlen(buffer)-1] = '\0';
 		control = buffer;
 		i=0;
-		while (palabra = strsep(&buffer,",")){
+		while ( (palabra = strsep(&buffer,",")) ){
 			parametros[i] = malloc(sizeof(char)*strlen(palabra));
 			strcpy(parametros[i++],palabra);
 		}
