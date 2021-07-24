@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+typedef void *(*FuncionCopiadora)(void *dato);
+/** Retorna una copia fisica del dato */
 typedef bool (*FuncionComparadora)(void *dato1, void *dato2);
 /** Retorna un booleano que es true si los datos son iguales y false en caso
 contrario */
@@ -26,6 +28,7 @@ struct _TablaHash {
   struct CasillaHash *elems;
   unsigned numElems;
   unsigned capacidad;
+  FuncionCopiadora copia;
   FuncionComparadora comp;
   FuncionDestructora destr;
   FuncionHash hash;
@@ -37,7 +40,8 @@ typedef struct _TablaHash *TablaHash;
  * Crea una nueva tabla hash vacia, con la capacidad dada.
  */
 TablaHash tablahash_crear(unsigned capacidad, FuncionComparadora comp,
-                         FuncionDestructora destr, FuncionHash hash);
+                         FuncionDestructora destr, FuncionHash hash,
+                         FuncionCopiadora copia);
 
 /**
  * Retorna el numero de elementos de la tabla.

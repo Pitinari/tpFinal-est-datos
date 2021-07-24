@@ -36,6 +36,8 @@ bool contacto_validar_nombre (char *nombre);
 //Retorna true si el telefono es valido y false en caso contrario
 bool contacto_validar_telefono (char *telefono);
 
+void *contacto_copiar (void *cont);
+
 typedef enum {Agregar,Eliminar,Editar} Accion;
 
 struct _Contacto_Accion{
@@ -48,5 +50,13 @@ typedef struct _Contacto_Accion *ContactoAcc;
 ContactoAcc contactoAcc_crear (Contacto cont, Accion acc);
 
 void contactoAcc_destruir (void *contAcc);
+
+int contacto_comparar_nombre(void *dato1, void* dato2);
+
+int contacto_comparar_apellido(void *dato1, void* dato2);
+
+int contacto_comparar_telefono(void *dato1, void* dato2);
+
+int contacto_comparar_edad(void *dato1, void* dato2);
 
 #endif

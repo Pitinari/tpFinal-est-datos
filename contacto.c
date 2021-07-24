@@ -75,16 +75,16 @@ bool contacto_validar_telefono (char *telefono){
     return true;
 }
 
-Contacto contacto_copiar (Contacto cont){
+void *contacto_copiar (void *cont){
     char *nombre, *apellido, *telefono;
-    unsigned edad = cont->edad;
-    nombre = malloc(sizeof(char)*strlen(cont->nombre));
-    strcpy(nombre,cont->nombre);
-    apellido = malloc(sizeof(char)*strlen(cont->apellido));
-    strcpy(apellido,cont->apellido);
-    telefono = malloc(sizeof(char)*strlen(cont->telefono));
-    strcpy(telefono,cont->telefono);
-    return contacto_crear(nombre,apellido,edad,telefono);
+    unsigned edad = ((Contacto)cont)->edad;
+    nombre = malloc(sizeof(char)*strlen(((Contacto)cont)->nombre)+1);
+    strcpy(nombre,((Contacto)cont)->nombre);
+    apellido = malloc(sizeof(char)*strlen(((Contacto)cont)->apellido)+1);
+    strcpy(apellido,((Contacto)cont)->apellido);
+    telefono = malloc(sizeof(char)*strlen(((Contacto)cont)->telefono)+1);
+    strcpy(telefono,((Contacto)cont)->telefono);
+    return (void*)contacto_crear(nombre,apellido,edad,telefono);
 }
 
 ContactoAcc contactoAcc_crear (Contacto cont, Accion acc){
@@ -97,4 +97,20 @@ ContactoAcc contactoAcc_crear (Contacto cont, Accion acc){
 void contactoAcc_destruir (void *contAcc){
     contacto_eliminar( ((ContactoAcc)contAcc)->cont);
     free((ContactoAcc)contAcc);
+}
+
+int contacto_comparar_nombre(void *dato1, void* dato2){
+    return strcmp(((Contacto)dato1)->nombre , ((Contacto)dato2)->nombre);
+}
+
+int contacto_comparar_apellido(void *dato1, void* dato2){
+    return strcmp(((Contacto)dato1)->apellido , ((Contacto)dato2)->apellido);
+}
+
+int contacto_comparar_telefono(void *dato1, void* dato2){
+    return strcmp(((Contacto)dato1)->telefono , ((Contacto)dato2)->telefono);
+}
+
+int contacto_comparar_edad(void *dato1, void* dato2){
+    return ((Contacto)dato1)->edad - ((Contacto)dato2)->edad;
 }

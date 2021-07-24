@@ -7,13 +7,15 @@
  * Crea una nueva tabla hash vacia, con la capacidad dada.
  */
 TablaHash tablahash_crear(unsigned capacidad, FuncionComparadora comp,
-                         FuncionDestructora destr, FuncionHash hash) {
+                         FuncionDestructora destr, FuncionHash hash,
+                         FuncionCopiadora copia) {
 
   // Pedimos memoria para la estructura principal y las casillas.
   TablaHash tabla = malloc(sizeof(struct _TablaHash));
   tabla->elems = malloc(sizeof(struct CasillaHash) * capacidad);
   tabla->numElems = 0;
   tabla->capacidad = capacidad;
+  tabla->copia = copia;
   tabla->comp = comp;
   tabla->destr = destr;
   tabla->hash = hash;
@@ -96,7 +98,7 @@ void tablahash_insertar(TablaHash tabla, void *dato) {
   // Insertar el dato si la casilla estaba libre.
   if (tabla->elems[idx].dato == NULL) {
     tabla->numElems++;
-    tabla->elems[idx].dato = dato;
+    tabla->elems[idx].dato = tabla->copia(dato);
     return;
   }
   // Sobrescribir el dato si el mismo ya se encontraba en la tabla.
@@ -104,14 +106,15 @@ void tablahash_insertar(TablaHash tabla, void *dato) {
     while(tabla->elems[idx].dato){
       if(tabla->elems[idx].eliminado){
         tabla->destr(tabla->elems[idx].dato);
-        tabla->elems[idx].dato = dato;
+        tabla->elems[idx].dato = tabla->copia(dato);
         tabla->elems[idx].eliminado = false;
         tabla->numElems++;
         return;
       }
       idx = tabla->hash(dato,++cantColisiones) % tabla->capacidad;
     }
-    tabla->elems[idx].dato = dato;
+    tabla->elems[idx].dato = tabla->copia(dato);
+    tabla->numElems++;
     return;
   }
   else{
@@ -119,7 +122,7 @@ void tablahash_insertar(TablaHash tabla, void *dato) {
       idx = tabla->hash(dato,++cantColisiones) % tabla->capacidad;
 
     tabla->destr(tabla->elems[idx].dato);
-    tabla->elems[idx].dato = dato;
+    tabla->elems[idx].dato = tabla->copia(dato);
     return;
   }
 
@@ -177,7 +180,7 @@ unsigned i,j;
  */
 TablaHash tablahash_agrandar (TablaHash tablaVieja){
   TablaHash tablaNueva = tablahash_crear(primo_mas_cercano(tablahash_capacidad(tablaVieja) * 10),
-                         tablaVieja->comp, tablaVieja->destr, tablaVieja->hash);
+                         tablaVieja->comp, tablaVieja->destr, tablaVieja->hash, tablaVieja->copia);
 
   for (unsigned i = 0; i < tablahash_capacidad(tablaVieja) ; i++){
     if ((tablaVieja->elems[i].dato != NULL) && (tablaVieja->elems[i].eliminado == false))

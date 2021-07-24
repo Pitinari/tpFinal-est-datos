@@ -25,8 +25,9 @@ char *ingresar_buffer(){
       }
       string[i] = (char) c;
   }
-  // almacenamos siempre 1 extra de espacio para poder guardar el terminador
-  string = realloc(string, sizeof(char)*(tamano+1));
+  // almacenamos 1 extra de espacio para poder guardar el terminador
+  if (tamano <= i)
+    string = realloc(string, sizeof(char)*(tamano+1));
   string[i]='\0';
   return string;
 }
@@ -96,6 +97,7 @@ void interprete_agregar (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer){
         pila_destruir(*rehacer, contactoAcc_destruir);
         *rehacer = pila_crear();
     }
+    contacto_eliminar(cont);
     return;
 }
 
@@ -258,7 +260,6 @@ void filtrar_or(TablaHash *tabla){
 
 void interprete_deshacer (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer){
     ContactoAcc contAcc = (ContactoAcc)listaNelem_dato_actual(*deshacer);
-    contacto_mostrar(contAcc->cont);
     if (contAcc == NULL){
         printf("No hay nada que deshacer\n");
         return;
@@ -281,7 +282,6 @@ void interprete_deshacer (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer)
 
 void interprete_rehacer (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer){
     ContactoAcc contAcc = (ContactoAcc)pila_primero(*rehacer);
-    contacto_mostrar(contAcc->cont);
     if (contAcc == NULL){
         printf("No hay nada que rehacer\n");
         return;
@@ -328,7 +328,7 @@ bool interpretar(char *buffer, TablaHash *tabla, ListaNelem *deshacer, Pila *reh
     }
     //cargar
     if (buffer[0] == '5' && buffer[1] == '\0'){
-        printf("Ingrese nombre del archivo a cargar: ");
+        printf("Ingrese ruta del archivo a cargar: ");
         char *nombreArchivo = ingresar_buffer();
         cargar(tabla, nombreArchivo);
         free(nombreArchivo);        
@@ -336,7 +336,7 @@ bool interpretar(char *buffer, TablaHash *tabla, ListaNelem *deshacer, Pila *reh
     }
     //guardar
     if (buffer[0] == '6' && buffer[1] == '\0'){
-        printf("Ingrese nombre del archivo a guardar: ");
+        printf("Ingrese ruta del archivo a guardar: ");
         char *nombreArchivo = ingresar_buffer();
         guardar(tabla,nombreArchivo);
         free(nombreArchivo);
@@ -364,7 +364,14 @@ bool interpretar(char *buffer, TablaHash *tabla, ListaNelem *deshacer, Pila *reh
     }
     //guardar ordenado
     if (buffer[0] == '1' && buffer[1] == '1' && buffer[2] == '\0'){
-        printf("comando valido");
+        char *nombreArchivo, *argumento;
+        printf("Ingrese ruta del archivo a guardar: ");
+        nombreArchivo = ingresar_buffer();
+        printf("Ingrese nombre de atributo: ");
+        argumento = ingresar_buffer();
+        guardar_ordenado (tabla, nombreArchivo, argumento);
+        free(nombreArchivo);
+        free(argumento);
         return true;
     }
     //buscar por suma de edades
