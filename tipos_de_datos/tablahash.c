@@ -71,9 +71,13 @@ void *tablahash_buscar(TablaHash tabla, void *dato) {
     return tabla->elems[idx].dato;
   // Retornar NULL en otro caso.
   else{
-    while (tabla->elems[idx].dato){
-      if (tabla->comp(tabla->elems[idx].dato, dato) && !(tabla->elems[idx].eliminado))
-        return tabla->elems[idx].dato;
+    while (tabla->elems[idx].dato != NULL){
+      if (tabla->comp(tabla->elems[idx].dato, dato)){
+        if (!(tabla->elems[idx].eliminado))
+          return tabla->elems[idx].dato;
+        else
+          return NULL;
+      }
       idx = tabla->hash(dato,++cantColisiones) % tabla->capacidad;
     }
     return NULL;

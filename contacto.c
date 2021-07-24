@@ -42,7 +42,7 @@ void contacto_reemplazar_datos (Contacto cont, unsigned edadNueva, char *telefon
 
 void contacto_mostrar (Contacto cont){
     if (cont == NULL)
-        printf("El contacto no existe");
+        printf("El contacto no existe\n");
     else
         printf("Nombre y Apellido: %s %s\tEdad: %d\tTelefono: %s\n",
         cont->nombre,cont->apellido,cont->edad,cont->telefono);
@@ -73,4 +73,28 @@ bool contacto_validar_telefono (char *telefono){
             return false;
     }
     return true;
+}
+
+Contacto contacto_copiar (Contacto cont){
+    char *nombre, *apellido, *telefono;
+    unsigned edad = cont->edad;
+    nombre = malloc(sizeof(char)*strlen(cont->nombre));
+    strcpy(nombre,cont->nombre);
+    apellido = malloc(sizeof(char)*strlen(cont->apellido));
+    strcpy(apellido,cont->apellido);
+    telefono = malloc(sizeof(char)*strlen(cont->telefono));
+    strcpy(telefono,cont->telefono);
+    return contacto_crear(nombre,apellido,edad,telefono);
+}
+
+ContactoAcc contactoAcc_crear (Contacto cont, Accion acc){
+    ContactoAcc contAcc = malloc(sizeof(struct _Contacto_Accion));
+    contAcc->cont = contacto_copiar(cont);
+    contAcc->acc = acc;
+    return contAcc;
+}
+
+void contactoAcc_destruir (void *contAcc){
+    contacto_eliminar( ((ContactoAcc)contAcc)->cont);
+    free((ContactoAcc)contAcc);
 }

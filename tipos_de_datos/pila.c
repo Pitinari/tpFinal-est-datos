@@ -14,6 +14,8 @@ Pila pila_agregar (Pila pila, void *dato){
 }
 
 void *pila_primero (Pila pila){
+	if (pila == NULL)
+		return NULL;
 	return pila->dato;
 }
 

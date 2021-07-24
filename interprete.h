@@ -2,6 +2,8 @@
 #define INTERPRETE_H
 
 #include "tipos_de_datos/tablahash.h"
+#include "tipos_de_datos/listaNelem.h"
+#include "tipos_de_datos/pila.h"
 
 #include <stdbool.h>
 
@@ -11,6 +13,6 @@ char *ingresar_buffer();
 
 // Recibira un buffer de entrada y decidira que accion tomar y retornara
 // un entero dependiendo de si seguir pidiendo entrada
-bool interpretar(char *buffer, TablaHash *tabla);
+bool interpretar(char *buffer, TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer);
 
 #endif

@@ -36,4 +36,17 @@ bool contacto_validar_nombre (char *nombre);
 //Retorna true si el telefono es valido y false en caso contrario
 bool contacto_validar_telefono (char *telefono);
 
+typedef enum {Agregar,Eliminar,Editar} Accion;
+
+struct _Contacto_Accion{
+    Contacto cont;
+    Accion acc;
+};
+
+typedef struct _Contacto_Accion *ContactoAcc;
+
+ContactoAcc contactoAcc_crear (Contacto cont, Accion acc);
+
+void contactoAcc_destruir (void *contAcc);
+
 #endif

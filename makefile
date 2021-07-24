@@ -1,16 +1,17 @@
 FLAGS = -Wall -Wextra -Werror -std=c99 -g
+DT = tipos_de_datos/
 
 #declaracion de destinos
-main: main.o interprete.o contacto.o utils.o tablahash.o archivos.o
-	gcc $(FLAGS) -o $@.out $@.o interprete.o contacto.o utils.o archivos.o tablahash.o -lm
+main: main.o interprete.o contacto.o utils.o archivos.o tablahash.o pila.o listaNelem.o
+	gcc $(FLAGS) -o $@.out $@.o interprete.o contacto.o utils.o archivos.o tablahash.o pila.o listaNelem.o -lm
 
-main.o:	main.c  interprete.h contacto.h tipos_de_datos/tablahash.h
+main.o:	main.c  interprete.h contacto.h $(DT)tablahash.h $(DT)pila.h $(DT)listaNelem.h
 	gcc $(FLAGS) -c	main.c
 
-archivos.o: archivos.c archivos.h tipos_de_datos/tablahash.h
+archivos.o: archivos.c archivos.h $(DT)tablahash.h
 	gcc $(FLAGS) -c archivos.c
 
-interprete.o: interprete.c interprete.h contacto.h tipos_de_datos/tablahash.h
+interprete.o: interprete.c interprete.h contacto.h $(DT)tablahash.h $(DT)pila.h $(DT)listaNelem.h
 	gcc $(FLAGS) -c interprete.c
 
 contacto.o: contacto.c contacto.h utils.h
@@ -19,8 +20,14 @@ contacto.o: contacto.c contacto.h utils.h
 utilis.o: utils.c utils.h
 	gcc $(FLAGS) -c utils.c
 
-tablahash.o: tipos_de_datos/tablahash.c tipos_de_datos/tablahash.h
-	gcc $(FLAGS) -c tipos_de_datos/tablahash.c -lm
+tablahash.o: $(DT)tablahash.c $(DT)tablahash.h
+	gcc $(FLAGS) -c $(DT)tablahash.c -lm
+
+pila.o: $(DT)pila.c $(DT)pila.h
+	gcc -c $(DT)pila.c
+
+listaNelem.o: $(DT)listaNelem.c $(DT)listaNelem.h
+	gcc -c $(DT)listaNelem.c
 
 clean:
 	rm *.o

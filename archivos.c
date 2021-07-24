@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "archivos.h"
 #include "tipos_de_datos/tablahash.h"
 #include "contacto.h"
@@ -35,16 +36,27 @@ char *strsep(char **stringp, const char *delim) {
 }
 
 void cargar(TablaHash *tabla, char *nombreArchivo){
-	char *palabra, *control, *buffer;
+	char *palabra, *control, *buffer = NULL;
 	FILE *archivo = fopen(nombreArchivo, "r");
 	if (archivo == NULL){
 		printf("El archivo no se pudo abrir");
 		exit(EXIT_FAILURE);
 	}
 	char *parametros[4];
+	size_t n = 0;
 	unsigned i;
-	while ((getline(&buffer,NULL,archivo) == -1)){
-		buffer[strlen(buffer)-1] = '\0';
+	getline(&buffer,&n,archivo);
+	if(buffer)
+		free(buffer);
+	if (feof(archivo)){
+		printf("Archivo sin datos");
+		return;
+	}
+	buffer = NULL;
+	while (!feof(archivo)){
+		getline(&buffer,&n,archivo);
+		if(buffer[strlen(buffer)-1] == '\n')
+			buffer[strlen(buffer)-1] = '\0';
 		control = buffer;
 		i=0;
 		while ( (palabra = strsep(&buffer,",")) ){
@@ -54,15 +66,16 @@ void cargar(TablaHash *tabla, char *nombreArchivo){
 		if (((float)tablahash_nelems(*tabla) / (float)tablahash_capacidad(*tabla)) > 0.7)
         	*tabla = tablahash_agrandar(*tabla);
 
-    	tablahash_insertar(*tabla, contacto_crear(parametros[1],parametros[2],string_a_unsigned(parametros[3]),parametros[4]));
+    	tablahash_insertar(*tabla, contacto_crear(parametros[0],parametros[1],string_a_unsigned(parametros[2]),parametros[3]));
     	free(control);
-    	free(parametros[3]);
+		buffer = NULL;
+    	free(parametros[2]);
 	}
+
 	fclose(archivo);
 }
 
 void guardar(TablaHash *tabla, char *nombreArchivo){
-	printf("Ingrese nombre del archivo a guardar: ");
 	FILE *archivo = fopen(nombreArchivo, "w");
 	if (archivo == NULL){
 		printf("El archivo no se pudo abrir");

@@ -2,6 +2,8 @@
 #include "contacto.h"
 #include "archivos.h"
 #include "tipos_de_datos/tablahash.h"
+#include "tipos_de_datos/listaNelem.h"
+#include "tipos_de_datos/pila.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,6 +31,8 @@ char *ingresar_buffer(){
   return string;
 }
 
+//interprete_buscar: **(struct _TablaHash) -> Void
+// se encarga de pedir los datos claves del contacto, buscarlo y mostrarlo en pantalla
 void interprete_buscar (TablaHash *tabla){
     char *nombre, *apellido;
     Contacto cont;
@@ -38,14 +42,19 @@ void interprete_buscar (TablaHash *tabla){
     printf("Apellido: ");
     apellido = ingresar_buffer();
 
+    //busco el contacto en la tabla hash creando un auxiliar
     Contacto aux = contacto_crear(nombre,apellido,0,NULL);
     cont = (Contacto) tablahash_buscar(*tabla, aux);
+    //despues lo liberamos y mostramos el resultado de buscar el contacto
     contacto_eliminar(aux);
     contacto_mostrar(cont);
     return;
 }
 
-void interprete_agregar (TablaHash *tabla){
+//interprete_agregar: **(struct _TablaHash) -> Void
+//Se encarga de pedir los datos para crear un contacto, validarlos y agregarlos
+// a la tabla hash
+void interprete_agregar (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer){
     Contacto cont;
     char *nombre, *apellido, *telefono;
     unsigned edad;
@@ -82,23 +91,44 @@ void interprete_agregar (TablaHash *tabla){
         *tabla = tablahash_agrandar(*tabla);
 
     tablahash_insertar(*tabla, cont);
+    listaNelem_agregar (*deshacer, contactoAcc_crear(cont,Eliminar));
+    if (*rehacer != NULL){
+        pila_destruir(*rehacer, contactoAcc_destruir);
+        *rehacer = pila_crear();
+    }
     return;
 }
 
-void interprete_eliminar (TablaHash *tabla){
+//interprete_eliminar: **(struct _TablaHash) -> Void
+//Pide los campos claves para eliminar un elemento de la tabla hash
+void interprete_eliminar (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer){
     char *nombre, *apellido;
-    Contacto cont;
+
     printf("Eliminar contacto\nNombre: ");
     nombre = ingresar_buffer();
     printf("Apellido: ");
     apellido = ingresar_buffer();
-    cont = contacto_crear(nombre,apellido,0,NULL);
-    tablahash_eliminar(*tabla, cont);
+    //Se crea un contacto con los mismos campos claves que el que queremos eliminar
+    Contacto cont, aux = contacto_crear(nombre,apellido,0,NULL);
+    cont = (Contacto) tablahash_buscar(*tabla, aux);
+    if(cont != NULL){
+        tablahash_eliminar(*tabla, cont);
+        listaNelem_agregar (*deshacer, contactoAcc_crear(cont,Agregar));
+        if (*rehacer != NULL){
+            pila_destruir(*rehacer, contactoAcc_destruir);
+            *rehacer = pila_crear();
+        }
+    }
+    //se elimina y luego se libera el contacto auxiliar
+    contacto_eliminar(aux);
     contacto_eliminar(cont);
     return;
 }
 
-void interprete_editar (TablaHash *tabla){
+//interprete_editar: **(struct _TablaHash) -> Void
+// Pide los campos claves para buscar un contacto en la tabla hash, si lo
+// encuentra pide los campos a modificar y los valida antes de reemplazarlos
+void interprete_editar (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer){
     Contacto cont;
     char *nombre, *apellido, *telefono;
     unsigned edad;
@@ -109,6 +139,7 @@ void interprete_editar (TablaHash *tabla){
     Contacto aux = contacto_crear(nombre,apellido,0,NULL);
     cont = (Contacto) tablahash_buscar(*tabla, aux);
     contacto_eliminar(aux);
+    //si se encontro un contacto pide el resto de los campos
     if (cont != NULL){
         printf("Edad a reemplazar: ");
         scanf("%u",&edad);
@@ -119,7 +150,13 @@ void interprete_editar (TablaHash *tabla){
             printf("Telefono no valido\n");
             free(telefono);
         return;
-    }
+        }
+        //si los campos son validos se reemplazan
+        listaNelem_agregar (*deshacer, contactoAcc_crear(cont,Editar));
+        if (*rehacer != NULL){
+            pila_destruir(*rehacer, contactoAcc_destruir);
+            *rehacer = pila_crear();
+        }
         contacto_reemplazar_datos (cont, edad, telefono);
     }
     else
@@ -127,6 +164,9 @@ void interprete_editar (TablaHash *tabla){
     return;
 }
 
+//filtrar_and: **(struct _TablaHash) -> Void
+//Pide el ingreso de los 4 campos de un contacto y busca dentro de la tabla hash
+// cuales contactos cumplen con todos los argumentos no nulos
 void filtrar_and(TablaHash *tabla){
     char *param[4];
     printf("Ingresar nombre: ");
@@ -138,6 +178,7 @@ void filtrar_and(TablaHash *tabla){
     printf("Ingresar telefono: ");
     param[3] = ingresar_buffer();
     unsigned i;
+    //revisa si ningun parametro es no nulo
     if (*param[0] == '\0' && *param[1] == '\0' && *param[2] == '\0' && *param[3] == '\0'){
         printf("Ningun parametro es no nulo\n");
         for (i=0 ; i<4 ; i++){
@@ -147,15 +188,17 @@ void filtrar_and(TablaHash *tabla){
     }
     
     Contacto cont;
-    bool noVacio = false;
+    bool noVacio = false; //para avisar que ningun contacto cumple con el filtro
     for(i=0 ; i < tablahash_capacidad(*tabla) ; i++){
         if ((*tabla)->elems[i].dato == NULL || (*tabla)->elems[i].eliminado == true)
             continue;
         cont = (Contacto)(*tabla)->elems[i].dato;
-        if ( !strcmp(cont->nombre,param[0]) &&
-             !strcmp(cont->apellido,param[1]) &&
-             !strcmp(cont->telefono,param[3]) &&
-             (cont->edad == string_a_unsigned(param[2])) ){
+        //Revisa 1 por 1 los parametros, si son no nulos los compara con el campo
+        // respectivo del contacto actual
+        if ( (*param[0] == '\0' ? true : !strcmp(cont->nombre,param[0])) &&
+             (*param[1] == '\0' ? true : !strcmp(cont->apellido,param[1])) &&
+             (*param[3] == '\0' ? true : !strcmp(cont->telefono,param[3])) &&
+             (*param[2] == '\0' ? true : (cont->edad == string_a_unsigned(param[2]))) ){
             contacto_mostrar(cont);
             noVacio = true;
         }
@@ -168,6 +211,9 @@ void filtrar_and(TablaHash *tabla){
     }
 }
 
+//filtrar_or: **(struct _TablaHash) -> Void
+//Pide el ingreso de los 4 campos de un contacto y busca dentro de la tabla hash
+// cuales contactos cumplen con al menos un argumento no nulo
 void filtrar_or(TablaHash *tabla){
     char *param[4];
     printf("Ingresar nombre: ");
@@ -179,6 +225,7 @@ void filtrar_or(TablaHash *tabla){
     printf("Ingresar telefono: ");
     param[3] = ingresar_buffer();
     unsigned i;
+    //revisa si ningun parametro es no nulo
     if (*param[0] == '\0' && *param[1] == '\0' && *param[2] == '\0' && *param[3] == '\0'){
         printf("Ningun parametro es no nulo\n");
         for (i=0 ; i<4 ; i++){
@@ -187,15 +234,16 @@ void filtrar_or(TablaHash *tabla){
         return;
     }
     Contacto cont;
-    bool noVacio = false;
+    bool noVacio = false; //para avisar que ningun contacto cumple con el filtro
     for (i=0 ; i < tablahash_capacidad(*tabla) ; i++) {
         if ((*tabla)->elems[i].dato == NULL || (*tabla)->elems[i].eliminado == true)
             continue;
         cont = (Contacto)(*tabla)->elems[i].dato;
-        if ( !strcmp(cont->nombre,param[0]) ||
-             !strcmp(cont->apellido,param[1]) ||
-             !strcmp(cont->telefono,param[3]) ||
-             (cont->edad == string_a_unsigned(param[2])) ){
+        // si el argumento es no nulo lo compara con el respectivo parametro del contacto 
+        if ( (*param[0] == '\0' ? false : !strcmp(cont->nombre,param[0])) ||
+             (*param[1] == '\0' ? false : !strcmp(cont->apellido,param[1])) ||
+             (*param[3] == '\0' ? false : !strcmp(cont->telefono,param[3])) ||
+             (*param[2] == '\0' ? false : (cont->edad == string_a_unsigned(param[2]))) ){
             contacto_mostrar(cont);
             noVacio = true;
         }
@@ -208,10 +256,56 @@ void filtrar_or(TablaHash *tabla){
     }
 }
 
+void interprete_deshacer (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer){
+    ContactoAcc contAcc = (ContactoAcc)listaNelem_dato_actual(*deshacer);
+    contacto_mostrar(contAcc->cont);
+    if (contAcc == NULL){
+        printf("No hay nada que deshacer\n");
+        return;
+    }
+    else if (contAcc->acc == Agregar){
+        *rehacer = pila_agregar(*rehacer, contactoAcc_crear(contAcc->cont,Eliminar));
+        tablahash_insertar(*tabla, contAcc->cont);
+    }
+    else if (contAcc->acc == Eliminar){
+        *rehacer = pila_agregar(*rehacer, contactoAcc_crear(contAcc->cont,Agregar));
+        tablahash_eliminar(*tabla, contAcc->cont);
+    }
+    else if (contAcc->acc == Editar){
+        Contacto cont = (Contacto) tablahash_buscar(*tabla, contAcc->cont);
+        *rehacer = pila_agregar(*rehacer, contactoAcc_crear(cont,Editar));
+        contacto_reemplazar_datos (cont, contAcc->cont->edad, contAcc->cont->telefono);
+    }
+    listaNelem_moverse_siguiente (*deshacer);
+}
+
+void interprete_rehacer (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer){
+    ContactoAcc contAcc = (ContactoAcc)pila_primero(*rehacer);
+    contacto_mostrar(contAcc->cont);
+    if (contAcc == NULL){
+        printf("No hay nada que rehacer\n");
+        return;
+    }
+    else if (contAcc->acc == Agregar){
+        listaNelem_agregar(*deshacer, contactoAcc_crear(contAcc->cont,Eliminar));
+        tablahash_insertar(*tabla, contAcc->cont);
+    }
+    else if (contAcc->acc == Eliminar){
+        listaNelem_agregar(*deshacer, contactoAcc_crear(contAcc->cont,Agregar));
+        tablahash_eliminar(*tabla, contAcc->cont);
+    }
+    else if (contAcc->acc == Editar){
+        Contacto cont = (Contacto) tablahash_buscar(*tabla, contAcc->cont);
+        listaNelem_agregar(*deshacer, contactoAcc_crear(cont,Editar));
+        contacto_reemplazar_datos (cont, contAcc->cont->edad, contAcc->cont->telefono);
+    }
+    *rehacer = pila_borrar_primero (*rehacer,contactoAcc_destruir);
+}
+
 //interpreta: *Char TablaHash -> Int
 // Recibira un buffer de entrada y decidira que accion tomar y retornara
 // un entero dependiendo de si seguir pidiendo entrada
-bool interpretar(char *buffer, TablaHash *tabla){
+bool interpretar(char *buffer, TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer){
     //buscar
     if (buffer[0] == '1' && buffer[1] == '\0'){
         interprete_buscar(tabla);
@@ -219,17 +313,17 @@ bool interpretar(char *buffer, TablaHash *tabla){
     }
     //agregar
     if (buffer[0] == '2' && buffer[1] == '\0'){
-        interprete_agregar(tabla);
+        interprete_agregar(tabla,deshacer,rehacer);
         return true;
     }
     //eliminar
     if (buffer[0] == '3' && buffer[1] == '\0'){
-        interprete_eliminar(tabla);
+        interprete_eliminar(tabla,deshacer,rehacer);
         return true;
     }
     //editar
     if (buffer[0] == '4' && buffer[1] == '\0'){
-        interprete_editar(tabla);
+        interprete_editar(tabla,deshacer,rehacer);
         return true;
     }
     //cargar
@@ -250,12 +344,12 @@ bool interpretar(char *buffer, TablaHash *tabla){
     }
     //deshacer
     if (buffer[0] == '7' && buffer[1] == '\0'){
-        printf("comando valido");
+        interprete_deshacer(tabla,deshacer,rehacer);
         return true;
     }
     //rehacer
     if (buffer[0] == '8' && buffer[1] == '\0'){
-        printf("comando valido");
+        interprete_rehacer(tabla,deshacer,rehacer);
         return true;
     }
     //and
