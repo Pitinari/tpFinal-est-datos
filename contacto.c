@@ -23,8 +23,10 @@ Contacto contacto_crear (char *nombre, char *apellido, unsigned edad, char *tele
 // Recibe un puntero de tipo void que apunta a una estructura de contacto
 // y libera la memoria de la misma
 void contacto_eliminar (void *cont){
-    if ((Contacto)cont){
+    if (cont){
+        if(((Contacto)cont)->nombre)
             free(((Contacto)cont)->nombre);
+        if(((Contacto)cont)->apellido)
             free(((Contacto)cont)->apellido);
         if (((Contacto)cont)->telefono)
             free(((Contacto)cont)->telefono);
@@ -150,5 +152,5 @@ int contacto_comparar_telefono(void *dato1, void* dato2){
 
 //contacto_comparar_nombre: *void *void -> int
 int contacto_comparar_edad(void *dato1, void* dato2){
-    return ((Contacto)dato1)->edad - ((Contacto)dato2)->edad;
+    return ((Contacto)dato2)->edad - ((Contacto)dato1)->edad;
 }

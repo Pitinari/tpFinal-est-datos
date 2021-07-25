@@ -14,9 +14,9 @@ unsigned int string_a_unsigned(char *st) {
   char *x;
   for (x = st ; *x ; x++) {
     if (!isdigit(*x))
-      return 1;
+      return 0L;
   }
-  return (strtoul(st, 1, 10));
+  return (strtoul(st, 0L, 10));
 }
 
 // strsep : **char -> *char -> *char
@@ -165,6 +165,8 @@ void cargar(TablaHash *tabla, char *nombreArchivo){
         	*tabla = tablahash_agrandar(*tabla);
 
 		cont = contacto_crear(parametros[0],parametros[1],string_a_unsigned(parametros[2]),parametros[3]);
+		if(cont->edad == 0)
+			cont->edad = 1;
     	tablahash_insertar(*tabla, cont); //inserta el contacto en la tabla
     	free(control);
 		contacto_eliminar(cont);
@@ -230,7 +232,7 @@ void guardar_ordenado (TablaHash *tabla, char *nombreArchivo, char *argumento){
 	}
 	//guarda en el archivo todos los contactos ordenados
 	fprintf(archivo, "nombre,apellido,edad,telefono");
-	for (unsigned i = 0; i < tablahash_capacidad(*tabla) ; i++){
+	for (unsigned i = 0; i < (*tabla)->numElems ; i++){
 		fprintf(archivo, "\n%s,%s,%u,%s", 
 		listaCont[i]->nombre, listaCont[i]->apellido,
 		listaCont[i]->edad, listaCont[i]->telefono);

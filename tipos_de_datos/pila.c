@@ -24,7 +24,8 @@ Pila pila_borrar_primero (Pila pila, FuncionDestructora destr){
 		return NULL;
 
 	Pila nodo = pila->prev;
-	destr(pila->dato);
+	if (destr != NULL)
+		destr(pila->dato);
 	free(pila);
 	return nodo;
 }
@@ -32,7 +33,8 @@ Pila pila_borrar_primero (Pila pila, FuncionDestructora destr){
 void pila_destruir (Pila pila, FuncionDestructora destr){
 	if (pila != NULL){
 		Pila nodo = pila->prev;
-		destr(pila->dato);
+		if (destr != NULL)
+			destr(pila->dato);
 		free(pila);
 		pila_destruir(nodo,destr);
 	}

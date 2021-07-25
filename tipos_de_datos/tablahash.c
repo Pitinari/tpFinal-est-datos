@@ -143,12 +143,16 @@ void tablahash_eliminar(TablaHash tabla, void *dato) {
   // Retornar el dato de la casilla si hay concidencia.
   else if (tabla->comp(tabla->elems[idx].dato, dato)){
     tabla->elems[idx].eliminado = true;
+    tabla->numElems--;
     return;
   }
   // Retornar NULL en otro caso.
   while (tabla->elems[idx].dato){
     if (tabla->comp(tabla->elems[idx].dato, dato)){
-      tabla->elems[idx].eliminado = true;
+      if (tabla->elems[idx].eliminado == false){
+        tabla->elems[idx].eliminado = true;
+        tabla->numElems--;
+      }
       return;
     }
     idx = tabla->hash(dato,++cantColisiones) % tabla->capacidad;

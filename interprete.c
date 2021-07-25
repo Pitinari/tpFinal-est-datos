@@ -1,6 +1,7 @@
 #include "interprete.h"
 #include "contacto.h"
 #include "archivos.h"
+#include "sumaEdades.h"
 #include "tipos_de_datos/tablahash.h"
 #include "tipos_de_datos/listaNelem.h"
 #include "tipos_de_datos/pila.h"
@@ -77,6 +78,8 @@ void interprete_agregar (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer){
     printf("Edad: ");
     scanf("%u",&edad);
     getchar();
+    if(edad == 0)
+        edad = 1;
     printf("Telefono: ");
     telefono = ingresar_buffer();
     if (contacto_validar_telefono(telefono) == false){
@@ -113,6 +116,7 @@ void interprete_eliminar (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer)
     //Se crea un contacto con los mismos campos claves que el que queremos eliminar
     Contacto cont, aux = contacto_crear(nombre,apellido,0,NULL);
     cont = (Contacto) tablahash_buscar(*tabla, aux);
+    contacto_eliminar(aux);
     if(cont != NULL){
         tablahash_eliminar(*tabla, cont);
         listaNelem_agregar (*deshacer, contactoAcc_crear(cont,Agregar));
@@ -122,8 +126,6 @@ void interprete_eliminar (TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer)
         }
     }
     //se elimina y luego se libera el contacto auxiliar
-    contacto_eliminar(aux);
-    contacto_eliminar(cont);
     return;
 }
 
@@ -376,7 +378,33 @@ bool interpretar(char *buffer, TablaHash *tabla, ListaNelem *deshacer, Pila *reh
     }
     //buscar por suma de edades
     if (buffer[0] == '1' && buffer[1] == '2' && buffer[2] == '\0'){
-        printf("comando valido");
+        if((*tabla)->numElems == 0){
+            printf("No hay contactos\n");
+            return true;
+        }
+        unsigned suma;
+        printf("Ingrese el numero natural que busca: ");
+        scanf("%u",&suma);
+        getchar();
+        if(suma == 0){
+            printf("Ningun contacto tiene edad nula\n");
+            return true;
+        }
+        Contacto *listaCont = malloc(sizeof(Contacto)*((*tabla)->numElems));
+	    tablahash_a_lista (*tabla,listaCont);
+        bool **tablaSumaEdades = generar_tabla_sumaEdades (listaCont, (*tabla)->numElems, suma);
+        if (tablaSumaEdades[(*tabla)->numElems][suma] == false)
+            printf("No hay combinaciones de contactos para llegar a esa suma\n");
+        else{
+            Pila contSuma = subconjunto_contactos_suma(tablaSumaEdades, listaCont, (*tabla)->numElems, suma);
+            while (contSuma != NULL){
+                contacto_mostrar((Contacto)pila_primero(contSuma));
+                contSuma = pila_borrar_primero(contSuma, NULL);
+            }
+        }
+
+        destruir_tabla_sumaEdades(tablaSumaEdades, (*tabla)->numElems);
+        free(listaCont);
         return true;
     }
     //salir
@@ -385,7 +413,7 @@ bool interpretar(char *buffer, TablaHash *tabla, ListaNelem *deshacer, Pila *reh
     }
     //error en la entrada
     else{
-        printf("Comando invalido");
+        printf("Comando invalido\n");
         return true;
     }
 }

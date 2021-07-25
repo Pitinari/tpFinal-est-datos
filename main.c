@@ -20,7 +20,6 @@ int main (){
         printf(MENU);
         buffer = ingresar_buffer();
         sigue = interpretar(buffer,&tabla,&deshacer,&rehacer);
-        printf("%u\n%u\n",tabla->numElems,tabla->capacidad);
         free(buffer);
     }
     tablahash_destruir(tabla);
