@@ -39,7 +39,7 @@ bool contacto_validar_telefono (char *telefono);
 void *contacto_copiar (void *cont);
 
 typedef enum {Agregar,Eliminar,Editar} Accion;
-
+// Se define este dato para las acciones de deshacer y rehacer
 struct _Contacto_Accion{
     Contacto cont;
     Accion acc;
