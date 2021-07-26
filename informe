@@ -1,0 +1,96 @@
+El programa tiene 3 modulos para los tipos de datos generales usados:
+-tablahash
+-pila
+-listaNelem
+
+Luego para la implementacion se tiene 6 modulos mas:
+
+-main, para gestionar el bucle general e inicializar las variables 
+que se van a usar en el programa.
+
+-interprete, toma la entrada de comando, decide que comando es y lo ejecuta. 
+Tambien se encarga pedir entradas de datos al usuario y validarlas
+
+-archivo, se encarga de todo lo relacionado con guardar/cargar en archivos
+
+-contacto, tiene todas las funciones para implemetar los contactos en el programa,
+tales como validar, modificar, comparar, crear, etc. Tambien contiene la deficion 
+de las acciones que sirven para la implementacion de deshacer y rehacer.
+
+-utils, contiene algunas funciones generales que se usaron en otros lugares 
+de la implementacion, como los hash de strings, un merge sort, una definicion
+de strsep, etc.
+
+-sumaEdades, que contiene la implemetacion de buscar un subconjunto de contactos
+tal que su suma de edades sea igual a un numero dado
+
+Tipos de datos:
+
+Como mencione arriba se uso una tabla hash, una pila y una lista de n elementos.
+
+La tabla hash se uso como una estructura para guardar los contactos, ya que era 
+muy eficiente en las tareas principales (Buscar,Agregar,Eliminar,Editar) ya 
+que habitualmente puede hacer estas taras en O(1), aunque eso puede empeorar
+cuando la tabla esta muy llena, por lo que se agranda automaticamente cuando tiene 
+una carga superior a un 70%.
+
+La pila se usa para almacenar las tareas de rehacer, ya que la cantidad de elementos
+que pueden llegar a entrar a la pila es la misma cantidad que el tamano de la lista 
+de n elementos, entonces al no necesitar control de cantidad, use la pila para sacar
+siempre la ultima accion agregada
+
+La lista de N elementos en un tipo de dato que implemente para el comando de deshacer 
+ya que puede ir agregando elementos a la lista, y cuando la cantidad de elementos llega 
+a su limite borra el elemento del final y agrega el nuevo al principio, luego la forma 
+de tomar elementos es similar a una pila.
+
+Para deshacer y rehacer defini un tipo de dato que contiene un contacto y una accion 
+(Agregar,Eliminar,Editar), cuando una de esas acciones se ejecuta en el interprete, 
+guarda en la lista de N elementos una estructuras de esas, indicando la accion opuesta 
+a la realizada, por ejemplo si agrego cont, la lista tendra primero el contacto cont y la 
+accion Eliminar. Luego para rehacer, cada vez que se ejecuta alguna de las acciones en el 
+interprete, la pila de rehacer se destruye. En el caso de que el interprete llame a deshacer 
+se ejecuta la accion, y luego se agrega a la pila de rehacer la accion opuesta. Si el 
+interprete llama a rehacer, toma la primera accion de la pila rehacer, ejecuta la accion 
+y guarda la opuesta en la lista de deshacer.
+
+Para la suma de edades fue dificil encontrar una solucion que no sea de complejidad 
+exponencial, hasta que encontre una solucion de complejidad pseudo-polinomial, que crea 
+una tabla de booleanos que se completa para saber si existe algun subconjunto de edades, 
+y finalmente para encontrar 1 subconjunto de edades.
+Pensando la lista de contactos como la lista de las edades. Una funcion
+crea una matriz de booleanos del tamaño de la cantidad de contactos + 1 por
+el valor de la de suma + 1 al que queremos llegar, entonces la matriz de booleanos
+en B[i][j] es true si existe alguna combinacion de edades entre Edades[0...i]
+que sume el valor j, razonandolo de la siguiente manera:
+if (Edades[i-1] > j)
+   B[i][j] = B[i-1][j]
+else 
+   B[i][j] = B[i-1][j] OR B[i-1][j-Edades[i-1]]
+eso nos dice que si en B[cantidad contactos][suma buscada] es true, entonces existe
+una combinacion en edades igual a la suma buscada. Luego para buscar un subconjunto 
+de contactos se lee la tabla del final hacia el principio, si la tabla en la posicion 
+de sacar el contacto actual es false, quiere decir que el contacto actual sirve para 
+la suma de las edades, entonces se agrega, y se mueve a la posicion superior (excluyendo 
+el contacto ya guardado) y al valor de la suma menos la edad del contacto que agregamos.
+Si la posicion de arriba (al excluir algun contacto) es true, significa que el contacto 
+no es necesario para la suma. 
+
+Dentro de las dificultades a la hora de implementar el programa fue pensar que era mas 
+eficienten en general, ya que estaba entre usa Tablas hash o Arboles binarios, y luego 
+decidirme por las tablas hash, otro problema fue pensar como manejar las colisiones de 
+datos, a lo que termine decidiendome por un direccionamiento abierto. Otra complicacion 
+fue buscar el tipo de dato mas adecuado para podes hacer los comando de deshacer y 
+rehacer de la forma mas secilla y practica posible. Tambien un problema que surgio, fue 
+como hacer la busqueda de la suma de edades sin que sea un problema de complejidad tan alta, 
+finalmente se resolvio como explique arriba.
+
+Para correr el programa, ejecutar en la consola "make main", luego correr "./main.out".
+Para correr los tests, hay que ejecutar "make test", y luego correr "./test.out".
+
+Bibliografia:
+-Material de la carrera
+-https://www.geeksforgeeks.org/subset-sum-problem-dp-25/
+-Consultas de personas en plataformas como: 
+    https://stackoverflow.com/
+    https://www.geeksforgeeks.org/

@@ -24,8 +24,11 @@ void test_listaNelem (){
     assert(lista);
     char *texto1, *texto2, *texto3;
     texto1 = malloc(sizeof(char)*10);
+    assert(texto1);
     texto2 = malloc(sizeof(char)*10);
+    assert(texto2);
     texto3 = malloc(sizeof(char)*10);
+    assert(texto3);
     strcpy(texto1,"Hola");
     strcpy(texto2,"Mundo");
     strcpy(texto3,"!");

@@ -20,7 +20,7 @@ Menu de acciones:\n
 
 #define MENU "Menu de acciones:\n1. Buscar\n2. Agregar\n3. Eliminar\n4. Editar\n5. Cargar\n6. Guardar\n7. Deshacer\n8. Rehacer\n9. AND\n10. OR\n11. Guardar ordenado\n12. Buscar por suma de edades\n13. Salir\n\nIngrese una accion: "
 
-#define TABLA_INI 11
+#define TABLA_INI 5
 
 #define CANT_DESHACER 2
 

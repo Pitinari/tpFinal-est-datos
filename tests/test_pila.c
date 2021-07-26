@@ -16,7 +16,9 @@ void test_pila(){
     pila = pila_crear();
     char *texto1, *texto2;
     texto1 = malloc(sizeof(char)*10);
+    assert(texto1);
     texto2 = malloc(sizeof(char)*10);
+    assert(texto2);
     strcpy(texto1,"hola");
     strcpy(texto2,"mundo");
     pila = pila_agregar (pila, texto1);

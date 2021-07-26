@@ -5,8 +5,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define CAPACIDAD_INICIAL 11
-/** Capacidad inicial para la tabla hash */
+#define CAPACIDAD_INICIAL 5
+/** Capacidad inicial para la tabla hash
+ *  Es bastante chica para que testee casos en colisiones
+ *  y que se agranda
+ */
 
 /**
  * Caso de prueba: Tabla hash para contactos
@@ -18,6 +21,7 @@ void test_tablaHash() {
       CAPACIDAD_INICIAL, (FuncionComparadora)contacto_comparar,
       (FuncionDestructora)contacto_eliminar, (FuncionHash)contacto_hash
       , (FuncionCopiadora)contacto_copiar);
+  assert(tabla);
 
   // Contactos
   Contacto agenda[6];
@@ -29,65 +33,47 @@ void test_tablaHash() {
   agenda[5] = contacto_crear("Dardo", "Fuseneco", 64, "3416894526");
 
   // Insertar
-  printf("Insercion:\n");
   for (int i = 0; i < 6; ++i) {
-    printf("Insertando el contacto: ");
-    contacto_mostrar(agenda[i]);
-    printf(" en la casilla %d.\n",
-           contacto_hash(agenda[i],0) % tablahash_capacidad(tabla));
+    assert(agenda[i]);
     tablahash_insertar(tabla, agenda[i]);
   }
 
+  // Agrandar
+  assert(tablahash_capacidad(tabla) != CAPACIDAD_INICIAL);
+
   // Buscar
-  printf("\nBusqueda:\n");
   for (int i = 0; i < 6; ++i) {
-    printf("Buscando el contacto: ");
-    contacto_mostrar(agenda[i]);
-    puts("");
     Contacto *ret = tablahash_buscar(tabla, agenda[i]);
-    if (ret != NULL)
-      printf("\tSe encuentra en la tabla.\n");
-    else
-      printf("\tNo se encuentra en la tabla.\n");
+    assert(ret);
   }
 
   // Eliminar
-  printf("\nEliminacion:\n");
   for (int i = 5; i > 2; --i) {
-    printf("Eliminando el contacto: ");
-    contacto_mostrar(agenda[i]);
-    puts("");
+    unsigned numElemsAnt = tablahash_nelems(tabla);
     tablahash_eliminar(tabla, agenda[i]);
+    assert(numElemsAnt-1 == tablahash_nelems(tabla));
   }
+  
 
   // Buscar
-  printf("\nBusqueda:\n");
-  for (int i = 0; i < 6; ++i) {
-    printf("Buscando el contacto: ");
-    contacto_mostrar(agenda[i]);
-    puts("");
+  for (int i = 0; i < 3; ++i) {
     Contacto *ret = tablahash_buscar(tabla, agenda[i]);
-    if (ret != NULL)
-      printf("\tSe encuentra en la tabla.\n");
-    else
-      printf("\tNo se encuentra en la tabla.\n");
+    assert(ret);
+  }
+  for (int i = 3; i < 6; ++i) {
+    Contacto *ret = tablahash_buscar(tabla, agenda[i]);
+    assert(!ret);
   }
 
   // Sobrescribir un contacto
   Contacto nuevoContacto = contacto_crear("Pepe", "Argento", 71, "3410000000");
-  printf("\nSobrescribiendo el contacto: ");
-  contacto_mostrar(agenda[0]);
-  printf("\n\tpor: ");
-  contacto_mostrar(nuevoContacto);
-  puts("");
+  assert(nuevoContacto);
   tablahash_insertar(tabla, nuevoContacto);
   // Chequeamos que se haya sobrescrito
   Contacto ret = tablahash_buscar(
       tabla, agenda[0]); // Es equivalente a buscar nuevoContacto porque se
                          // compara por nombre
-  printf("El nuevo contacto es: ");
-  contacto_mostrar(ret);
-  puts("");
+  assert(tabla->comp(ret,nuevoContacto));
 
   // Liberar memoria
   tablahash_destruir(tabla);

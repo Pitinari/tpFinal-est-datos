@@ -117,7 +117,7 @@ unsigned i,j;
  */
 void tablahash_agrandar (TablaHash tablaVieja){
   //busca un primo aproximadamente 10 veces mas grande, crea un array de casillas de ese tamano y guarda el array viejo
-  unsigned capacidadVieja = tablahash_capacidad(tablaVieja),capacidadNueva = primo_mas_cercano(tablahash_capacidad(tablaVieja) * 10);
+  unsigned capacidadVieja = tablahash_capacidad(tablaVieja),capacidadNueva = primo_mas_cercano(tablahash_capacidad(tablaVieja) * 5);
   struct CasillaHash *antigua = tablaVieja->elems;
   tablaVieja->elems = malloc(sizeof(struct CasillaHash) * capacidadNueva);
   tablaVieja->numElems = 0;
