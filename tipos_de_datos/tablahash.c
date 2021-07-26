@@ -193,3 +193,18 @@ TablaHash tablahash_agrandar (TablaHash tablaVieja){
   tablahash_destruir(tablaVieja);
   return tablaNueva;
 }
+
+// tablahash_a_lista: TablaHash -> *void
+// Dada una tabla hash y una lista de contactos del tamano de la cantidad
+// de posiciones ocupadas en la tabla hash, hace que todos los punteros de 
+// la lista apunten a los elementos de la tabla
+void *tablahash_a_lista (TablaHash tabla){
+  unsigned j = 0;
+  void *lista = malloc(sizeof(void*)*tabla->numElems)
+  for (unsigned i = 0; i < tabla->capacidad ; i++){
+    if(tabla->elems[i].dato == NULL || tabla->elems[i].eliminado == true)
+      continue;
+    lista[j++] = tabla->elems[i].dato;
+  }
+  return lista;
+}

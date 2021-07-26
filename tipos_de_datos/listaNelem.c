@@ -57,7 +57,7 @@ void listaNelem_destruir (ListaNelem lista){
         free(lista);
         return;
     }
-    ListaDoEn nodo = lista->actual->prev;
+    ListaDoEn nodo = lista->ultimo->prev;
     if(nodo == NULL){
         lista->destr(lista->ultimo->dato);
         free(lista->ultimo);

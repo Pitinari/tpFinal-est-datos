@@ -79,4 +79,6 @@ void tablahash_eliminar(TablaHash tabla, void *dato);
  */
 TablaHash tablahash_agrandar (TablaHash tablaVieja);
 
+void *tablahash_a_lista (TablaHash tabla)
+
 #endif /* __TABLAHASH_H__ */

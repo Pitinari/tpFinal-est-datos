@@ -37,19 +37,6 @@ char *strsep(char **stringp, const char *delim) {
     return rv;
 }
 
-// tablahash_a_lista: TablaHash *Contacto -> void
-// Dada una tabla hash y una lista de contactos del tamano de la cantidad
-// de posiciones ocupadas en la tabla hash, hace que todos los punteros de 
-// la lista apunten a los elementos de la tabla
-void tablahash_a_lista (TablaHash tabla, Contacto *listaCont){
-	unsigned j = 0;
-	for (unsigned i = 0; i < tabla->capacidad ; i++){
-		if(tabla->elems[i].dato == NULL || tabla->elems[i].eliminado == true)
-			continue;
-		listaCont[j++] = tabla->elems[i].dato;
-	}
-}
-
 // merge: **void int int int FuncionComparadoraMergeSort -> Void
 // Une dos sublistas de **arr, la primer sublista es arr[l..m] y la segunda
 // sublista es arr[m+1..r]. Une las sublistas dependiendo del orden dado por
@@ -209,8 +196,7 @@ void guardar_ordenado (TablaHash *tabla, char *nombreArchivo, char *argumento){
 	}
 	
 	//crea una lista que va a tener como datos los contactos de la tabla hash
-	Contacto *listaCont = malloc(sizeof(Contacto)*((*tabla)->numElems));
-	tablahash_a_lista (*tabla,listaCont);
+	Contacto *listaCont = (Contacto*)tablahash_a_lista (*tabla);
 
 	if (!strcmp(argumento,"nombre")){//ordena por el argumento especificado
 		mergeSort((void**)listaCont,0,(*tabla)->numElems-1,contacto_comparar_nombre);

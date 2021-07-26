@@ -8,8 +8,6 @@
 
 typedef int (*FuncionComparadoraMergeSort)(void *dato1, void *dato2);
 
-void tablahash_a_lista (TablaHash tabla, Contacto *listaCont);
-
 unsigned int string_a_unsigned(char *st);
 
 void cargar(TablaHash *tabla, char *buffer);

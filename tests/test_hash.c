@@ -10,7 +10,7 @@
 /**
  * Caso de prueba: Tabla hash para contactos
  */
-int main() {
+void test_tablaHash() {
 
   // Iniciar tabla hash
   TablaHash tabla = tablahash_crear(
@@ -96,8 +96,8 @@ int main() {
   // Liberar memoria
   tablahash_destruir(tabla);
   for (int i = 0; i < 6; ++i)
-    contacto_destruir(agenda[i]);
-  contacto_destruir(nuevoContacto);
+    contacto_eliminar(agenda[i]);
+  contacto_eliminar(nuevoContacto);
 
   return 0;
 }

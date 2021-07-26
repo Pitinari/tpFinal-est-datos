@@ -390,8 +390,7 @@ bool interpretar(char *buffer, TablaHash *tabla, ListaNelem *deshacer, Pila *reh
             printf("Ningun contacto tiene edad nula\n");
             return true;
         }
-        Contacto *listaCont = malloc(sizeof(Contacto)*((*tabla)->numElems));
-	    tablahash_a_lista (*tabla,listaCont);
+        Contacto *listaCont = (Contacto*)tablahash_a_lista (*tabla);
         bool **tablaSumaEdades = generar_tabla_sumaEdades (listaCont, (*tabla)->numElems, suma);
         if (tablaSumaEdades[(*tabla)->numElems][suma] == false)
             printf("No hay combinaciones de contactos para llegar a esa suma\n");

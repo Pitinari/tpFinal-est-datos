@@ -6,6 +6,20 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+//generar_tabla_sumaEdades: *Contacto Unsigned Unsigned -> **bool
+/*
+ Pensando la lista de contactos como la lista de las edades. La funcion
+ crea una matriz de booleanos del tamaño de la cantidad de contactos + 1 por
+ el valor de la de suma + 1 al que queremos llegar, entonces la matriz de booleanos
+ en B[i][j] es true si existe alguna combinacion de edades entre Edades[0...i]
+ que sume el valor j, razonandolo de la siguiente manera:
+ if (Edades[i-1] > j)
+    B[i][j] = B[i-1][j]
+ else 
+    B[i][j] = B[i-1][j] OR B[i-1][j-Edades[i-1]]
+ eso nos dice que si en B[cantidad contactos][suma buscada] es true, entonces existe
+ una combinacion en edades igual a la suma buscada
+*/
 bool **generar_tabla_sumaEdades (Contacto *contactos, unsigned cantContactos, unsigned suma){
     //inicia declarando la tabla que vamos a devolver
     bool **tabla = malloc(sizeof(bool*)*(cantContactos+1));
@@ -32,6 +46,8 @@ bool **generar_tabla_sumaEdades (Contacto *contactos, unsigned cantContactos, un
     return tabla;
 }
 
+//destruir_tabla_sumaEdades: **bool Unsigned -> void
+//libera memoria de una matriz de booleanos
 void destruir_tabla_sumaEdades (bool **tabla, unsigned cantContactos){
     for (unsigned i = 0 ; i <= cantContactos ; i++)
         free(tabla[i]);
@@ -42,7 +58,7 @@ Pila subconjunto_contactos_suma(bool **tabla, Contacto *contactos, unsigned cant
     Pila contSum = pila_crear();
     for (unsigned i = cantContactos, j = suma; i>0 && j>0; i--){
         if (tabla[i-1][j] == false){ //significa que el contacto actual sirve para la suma
-            contSum = pila_agregar(contSum, (void*)contactos[i-1]);
+            contSum = pila_agregar(contSum, contactos[i-1]);
             //se agrega el contacto actual a la pila (i-1 ya que la tabla tiene los casos base)
             j -= contactos[i-1]->edad;
             //se resta la edad del contacto agregado al valor suma para buscar

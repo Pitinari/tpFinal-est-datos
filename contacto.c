@@ -93,7 +93,7 @@ bool contacto_validar_nombre (char *nombre){
 // Toma un string y corrobora que los caracteres sean validos para guardarlos como telefono
 bool contacto_validar_telefono (char *telefono){
     for (unsigned i = 0; telefono[i] != '\0'; i++){
-        if (!(isdigit(telefono[i]) || telefono[i] == '-' || telefono[i] == '+') || telefono[i] == ',')
+        if (!(isdigit(telefono[i]) || telefono[i] == '-' || telefono[i] == '+' || telefono[i] == ' ') || telefono[i] == ',')
             return false;
     }
     return true;
