@@ -13,6 +13,6 @@ char *ingresar_buffer();
 
 // Recibira un buffer de entrada y decidira que accion tomar y retornara
 // un entero dependiendo de si seguir pidiendo entrada
-bool interpretar(char *buffer, TablaHash *tabla, ListaNelem *deshacer, Pila *rehacer);
+bool interpretar(char *buffer, TablaHash tabla, ListaNelem deshacer, Pila *rehacer);
 
 #endif

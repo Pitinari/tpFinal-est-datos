@@ -1,8 +1,10 @@
 #include "test_contacto.h"
 #include "../contacto.h"
+#include "../utils.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <assert.h>
 
 void test_contacto (){
@@ -13,7 +15,7 @@ void test_contacto (){
 	strcpy(nombre,"Pedro");
 	strcpy(apellido,"Casado");
 	strcpy(telefono,"123456");
-	Contacto cont = contacto_crear(nombre,apellido,12,telefono);
+	Contacto cont1 = contacto_crear(nombre,apellido,12,telefono);
 	assert(cont1);
 
 	nombre = malloc(sizeof(char)*15);
@@ -24,9 +26,7 @@ void test_contacto (){
 	strcpy(telefono,"654321");
 	Contacto cont2 = contacto_crear(nombre,apellido,12,telefono);
 
-	telefono = malloc(sizeof(char)*15);
-	strcpy(telefono,"789456");
-	contacto_reemplazar_datos (cont2, 45, telefono);
+	contacto_reemplazar_datos (cont2, 45, "789456");
 	assert(cont2);
 
 	assert(contacto_comparar(cont1,cont2) == false);
@@ -40,7 +40,7 @@ void test_contacto (){
 	assert(contacto_validar_telefono("+54 0341-4532525") == true);
 
 	contacto_eliminar(cont1);
-	cont1 = (Contacto)contacto_copia(cont2);
+	cont1 = (Contacto)contacto_copiar(cont2);
 
 	assert(contacto_comparar(cont1,cont2) == true);
 	assert(contacto_comparar_nombre(cont1,cont2) == 0);

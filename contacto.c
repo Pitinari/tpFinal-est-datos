@@ -50,7 +50,8 @@ void contacto_reemplazar_datos (Contacto cont, unsigned edadNueva, char *telefon
     if(cont->telefono)
         free(cont->telefono);
     cont->edad = edadNueva;
-    cont->telefono = telefonoNuevo;
+    cont->telefono = malloc(sizeof(char)*(strlen(telefonoNuevo)+1));
+    strcpy(cont->telefono , telefonoNuevo);
 }
 
 //contacto_mostrar: Contacto -> void

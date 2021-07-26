@@ -54,6 +54,7 @@ void destruir_tabla_sumaEdades (bool **tabla, unsigned cantContactos){
     free(tabla);
 }
 
+//subconjunto_contactos_suma: **bool *Contacto unsigned unsigned -> Pila
 Pila subconjunto_contactos_suma(bool **tabla, Contacto *contactos, unsigned cantContactos, unsigned suma){
     Pila contSum = pila_crear();
     for (unsigned i = cantContactos, j = suma; i>0 && j>0; i--){

@@ -22,6 +22,6 @@ Menu de acciones:\n
 
 #define TABLA_INI 11
 
-#define CANT_DESHACER 10
+#define CANT_DESHACER 2
 
 #endif

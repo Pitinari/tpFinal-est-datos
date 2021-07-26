@@ -6,14 +6,12 @@
 
 #include <stdlib.h>
 
-typedef int (*FuncionComparadoraMergeSort)(void *dato1, void *dato2);
-
 unsigned int string_a_unsigned(char *st);
 
-void cargar(TablaHash *tabla, char *buffer);
+void cargar(TablaHash tabla, char *buffer);
 
-void guardar(TablaHash *tabla, char *buffer);
+void guardar(TablaHash tabla, char *buffer);
 
-void guardar_ordenado (TablaHash *tabla, char *nombreArchivo, char *argumento);
+void guardar_ordenado (TablaHash tabla, char *nombreArchivo, char *argumento);
 
 #endif

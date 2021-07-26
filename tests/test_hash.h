@@ -1,5 +1,5 @@
-#ifndef TESTCONTACTO_H
-#define TESTCONTACTO_H
+#ifndef TESTHASH_H
+#define TESTHASH_H
 
 void test_tablaHash ();
 

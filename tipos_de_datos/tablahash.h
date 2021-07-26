@@ -74,11 +74,6 @@ void *tablahash_buscar(TablaHash tabla, void *dato);
  */
 void tablahash_eliminar(TablaHash tabla, void *dato);
 
-/*
- * Dado un numero entero positivo, busca el numero primo mayor, mas cercano.
- */
-TablaHash tablahash_agrandar (TablaHash tablaVieja);
-
-void *tablahash_a_lista (TablaHash tabla)
+void *tablahash_a_lista (TablaHash tabla);
 
 #endif /* __TABLAHASH_H__ */
